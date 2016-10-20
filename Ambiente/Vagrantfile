@@ -14,6 +14,12 @@ Vagrant.configure("2") do |config|
     end
 
     jarbas.vm.provision "shell", inline: <<-SHELL
+
+      apt-get -y install build-essentials
+      apt-get -y install git
+      cd /jarbas/
+      git clone https://github.com/gpcnifpb/jarbas.git
+
     SHELL
   end
 end
