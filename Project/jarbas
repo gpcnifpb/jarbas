@@ -1,0 +1,15 @@
+#/bin/bash
+
+while [[ $# > 0 ]]
+do
+key="$1"
+case $key in
+  --configure)
+      echo "Tela de configuração"
+      ;;
+  *)
+      echo "Digite algo"
+      ;;
+esac
+shift
+done
