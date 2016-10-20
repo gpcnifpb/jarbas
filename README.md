@@ -1,8 +1,8 @@
 # J.A.R.B.A.S - Framework de criação e gerenciamento de um ambiente para testes DDoS
 
-## README ##
+## README
 
-### Configuração do Ambiente Vagrant no WINDOWS - LAB 1 ### 
+### Configuração do Ambiente Vagrant no WINDOWS - LAB 1 
 - Vá em https://raw.githubusercontent.com/gpcnifpb/jarbas/master/Ambiente/Vagrantfile
 - Clique com o botão direito e selecione a opção Salvar Como
 - Selecione o tipo de aquivo "todos os arquivos"
