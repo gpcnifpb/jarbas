@@ -1,6 +1,10 @@
 #!/bin/bash
-
+. functions.sh
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
+
+# Declaração de constantes
+numRodadas="30"
+
 
 if [ -z $1 ]
 then
@@ -51,7 +55,7 @@ do
       if [ -z "$2" ]
       then
         echo "Executar o run com valores padrão."
-        # TODO CRIAR O RUN COM VALORES PADRÃO
+        run $numRodadas
         exit 1;
       fi
 
@@ -63,9 +67,11 @@ do
           if [ -z "$3" ]
           then
             echo "J.A.R.B.A.S LOG: Argumento Inválido depois de --rodadas (-r)" ; exit 1
+          else
+            echo "Rodadas: $numRodadas"
+            run $numRodadas
           fi
 
-          echo "Rodadas: "$numRodadas
           ;;
 
         *)
