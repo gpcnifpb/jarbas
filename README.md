@@ -1,4 +1,6 @@
-# J.A.R.B.A.S - Framework de criação e gerenciamento de um ambiente para testes DDoS
+# J.A.R.B.A.S - Jovens Alunos de Redes Brutalmente Atacando Servidores
+
+JARBAS é um Framework de criação e gerenciamento de um ambiente para testes DDoS
 
 ## README
 
