@@ -1,10 +1,10 @@
 #!/bin/bash
 . functions.sh
+
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
 # Declaração de constantes
 numRodadas="30"
-
 
 if [ -z $1 ]
 then
@@ -62,27 +62,95 @@ do
       args="$2"
       case $args in
         -r| --rodadas)
-          numRodadas="$3"
+          numRodadas="$3" #mover para dentro do else
 
-          if [ -z "$3" ]
-          then
-            echo "J.A.R.B.A.S LOG: Argumento Inválido depois de --rodadas (-r)" ; exit 1
-          else
-            echo "Rodadas: $numRodadas"
-            run $numRodadas
-          fi
+		if [ -z "$numRodadas" ]
+		then
+			echo "J.A.R.B.A.S LOG: Argumento VAZIO depois de --rodadas (-r)" ; exit 1
+		else
+			run $numRodadas
+		fi
 
-          ;;
+		;;
+          
+         check)
+         	checkArgs="$3" 
+
+         	if [ -z "$checkArgs" ]
+         	then
+         		echo "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
+         	else
+			        		
+			case $checkArgs in
+
+				ping)
+					numClients="10"
+					numSlaves="6"
+					
+					pingCheck $numClients $numSlaves
+					
+	#				pingArgs="$4"
+#
+#					if [ -z "$pingArgs" ]
+#					  then
+#					    numClients="10"
+#					    numSlaves="6"	
+#					  else
+#						echo "PRECISA IMPLEMENTAR"					  	
+#						case $pingArgs in
+#							-nc| --num-clients)
+#								numClients="$5"
+#								
+#								if [ -z "$numClients" ]
+#								  then
+#								    numClients="10"
+#								fi
+#			
+#								shift
+#
+#								;;						
+#	
+#							-ns| --num-slaves)
+#								numSlaves="$5"
+#
+			#					if [ -z "$numSlaves" ]
+			#					  then
+			#					    numSlaves="6"
+			#					fi
+			#
+						#		shift
+						#		;;
+						#	*)
+          					#		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1						
+						#esac
+
+					#fi	
+
+					;;
+				*)
+          				echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1		
+			esac
+			shift
+         	fi
+         	
+         	;;
+         
+	atacado)
+		echo "rodando atacado"
+		;;
 
         *)
-          echo "J.A.R.B.A.S LOG: Argumento Inválido depois do comando run" ; exit 1
+          echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
       esac
+      #shift
       break
       ;;
 
     *)
-    echo "J.A.R.B.A.S LOG: Argumento Inválido" ; exit 1
+    echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO" ; exit 1
     ;;
   esac
   shift
 done
+
+
