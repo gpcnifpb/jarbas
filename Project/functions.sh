@@ -85,13 +85,12 @@ function pingCheck() {
 #   $1 -> Numero de Rodadas
 ##################################################################
 function runSemAtaque() {
-	numRodadas=$1
+	numRodadas="$1"
 	tipoDeExperimento="SemAtaque"
 
   	echo "Executando sem ataque na rodada $1"
 	echo "Executando função em atacado: "
-	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas '$numRodadas $tipoDeExperimento
-	
+	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
 }
 
 ##################################################################
@@ -111,7 +110,7 @@ function runComAtaque() {
 #   $1 -> Numero de Rodadas
 #   $2 -> Tipo do experimento
 ##################################################################
-function atacado() {
+function funcAtacado() {
 	echo "Iniciando função em atacado:"
 	COUNT=0
 	numRodadas="$1"

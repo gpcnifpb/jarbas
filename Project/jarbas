@@ -136,7 +136,11 @@ do
          	;;
          
 	atacado)
-		echo "rodando atacado"
+		echo "Me execute como atacado"
+		numRodadas="$3"
+		tipoDeExperimento="$4"
+		
+		funcAtacado $numRodadas $tipoDeExperimento
 		;;
 
         *)
