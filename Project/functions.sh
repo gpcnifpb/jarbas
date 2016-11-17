@@ -142,10 +142,53 @@ function runXenServer() {
   tipoDeExperimento="$2"
 
   # TODO add timestamp to log name
-  # TODO check vmstat command
+  # TODO check vmstat
 
-  tcpdump -i eth1 -s 0 -U >> /path/to/log/$2_$2
-  tcpdump -i vif1.0 -s 0 -U >> /path/to/log/$2_$2
-  tcpdump -i vif2.0 -s 0 -U >> /path/to/log/$2_$2
-  vmstat -n 1
+  tcpdump -i eth1 -s 0 -U >> /path/to/log/$2_eth1_$1
+  tcpdump -i vif1.0 -s 0 -U >> /path/to/log/$2_vif1_$1
+  tcpdump -i vif2.0 -s 0 -U >> /path/to/log/$2_vif2_$1
+  vmstat -n 1 > /path/to/log/$2_vmstat_$1
+
+  killall vmstat
+  killall tcpdump
+}
+
+##################################################################
+# Objetivo: Inicia monitoramento no vizinho ao atacado (Monitorado)
+# Argumentos:
+#   $1 -> Numero de Rodadas
+#   $2 -> Tipo do experimento
+##################################################################
+function runMonitorado() {
+  echo "Iniciando monitoramento"
+  numeroRodada="$1"
+  tipoDeExperimento="$2"
+  COUNT=0
+
+  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/$numeroRodada &
+
+  while [ $COUNT != 840 ]
+  do
+  netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/socket_$numeroRodada.log
+  sleep 1
+  COUNT=$((COUNT+1))
+  done
+
+  # TODO Executar simultaneamente os comandos abaixo.
+
+  sleep 70
+  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+  sleep 10
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/cpu_$numeroRodada.log
+  sleep 10
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/disk_$numeroRodada.log
+  sleep 10
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/memr_$numeroRodada.log
+  sleep 10
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/memw_$numeroRodada.log
+  sleep 10
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+
+  killall collectl
+
 }
