@@ -41,7 +41,7 @@ function pingCheck() {
 			exit
 
 		fi
-	
+
 	ping -c1 192.168.10.201 > /dev/null
 
 		if [ $? -eq 0 ]
@@ -51,7 +51,7 @@ function pingCheck() {
 			echo "Teste de ping para Monitorado falhou"
 			exit
 		fi
-		
+
 	for i in `seq 1 $NUMCLIENTS`
 	do
 		ping -c1 192.168.0.$i > /dev/null
@@ -105,7 +105,7 @@ function runComAtaque() {
 }
 
 ##################################################################
-# Objetivo: Executa o experimento sem ataque (Só clientes)
+# Objetivo: Inicia monitoramento de dados no servidor atacado.
 # Argumentos:
 #   $1 -> Numero de Rodadas
 #   $2 -> Tipo do experimento
@@ -127,4 +127,25 @@ function funcAtacado() {
 
 	killall collectl
 	killall jarbas
+}
+
+
+##################################################################
+# Objetivo: Inicia monitoramento de dados no Hypervisor.
+# Argumentos:
+#   $1 -> Numero de Rodadas
+#   $2 -> Tipo do experimento
+##################################################################
+function runXenServer() {
+  echo "Iniciando monitoramento XenServer"
+  numeroRodada="$1"
+  tipoDeExperimento="$2"
+
+  # TODO add timestamp to log name
+  # TODO check vmstat command
+
+  tcpdump -i eth1 -s 0 -U >> /path/to/log/$2_$2
+  tcpdump -i vif1.0 -s 0 -U >> /path/to/log/$2_$2
+  tcpdump -i vif2.0 -s 0 -U >> /path/to/log/$2_$2
+  vmstat -n 1
 }
