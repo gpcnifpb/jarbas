@@ -41,7 +41,7 @@ function pingCheck() {
 			exit
 
 		fi
-	
+
 	ping -c1 192.168.10.201 > /dev/null
 
 		if [ $? -eq 0 ]
@@ -51,7 +51,7 @@ function pingCheck() {
 			echo "Teste de ping para Monitorado falhou"
 			exit
 		fi
-		
+
 	for i in `seq 1 $NUMCLIENTS`
 	do
 		ping -c1 192.168.0.$i > /dev/null
@@ -101,6 +101,7 @@ function runSemAtaque() {
 ##################################################################
 function runComAtaque() {
   	numRodadas=$1
+    tipoDeExperimento="ComAtaque"
   	echo "Executando com ataque na rodada $1"
 }
 
@@ -117,13 +118,14 @@ function funcAtacado() {
 	tipoDeExperimento="$2"
 
 	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/$tipoDeExperimento_$numRodadas &
+  sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
+  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/cpu_$numRodadas.log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/disk_$numRodadas.log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/memr_$numRodadas.log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/memw_$numRodadas.log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup &
 
-	while [ $COUNT != 60 ]
-	do
-		netstat -taupen | grep 80 | wc -l >> /gpcn/atacado/logs/netstat/socket_$tipoDeExperimento_$numRodadas.log
-		sleep 1
-		COUNT=$((COUNT+1))
-	done
 
 	killall collectl
 	killall jarbas
