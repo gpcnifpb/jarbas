@@ -91,6 +91,13 @@ function runSemAtaque() {
   	echo "Executando sem ataque na rodada $1"
 	echo "Executando função em atacado: "
 	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
+  for i in `seq 1 6`
+  do
+    sshpass -p 'vagrant' ssh root@192.168.0.$i '/gpcn/clientes/scripts/jarbas run cliente '$numRodadas $tipoDeExperimento &
+    echo "OUCH $i clients"
+  done
+  echo 'OUCH Esperando 1080 segundos'
+  sleep 1080
 }
 
 ##################################################################
@@ -129,4 +136,47 @@ function funcAtacado() {
 
 	killall collectl
 	killall jarbas
+}
+##################################################################
+# Objetivo: inicializar os clientes
+# Argumentos:
+#   $numCliente->
+#
+##################################################################
+function funcCliente(){
+  echo "iniciando função nos clientes:"
+  COUNT=0
+  numClient="$1"
+
+  ethtool -s eth1 speed 10 duplex full
+  ethtool -s eth2 speed 10 duplex full
+
+  tcpdump -i eth0 -U -w client_$numClient.cap &
+#Ping Atacado
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_$numClient.clt_01_srv_01.txt &
+#Ping Nao-Atacado
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_$numClient.clt_01_srv_02.txt &
+#Start Siege
+  siege -c 100 192.168.10.201 &
+#Finalizando
+  killall -s SIGINT ping
+  killall -s SIGINT siege
+  killall -s SIGINT tcpdump
+
+##################################################################
+# Objetivo: Checar se a velocidade da interface foi definida corretamente
+# Argumentos:
+#   $Inter-> Interface que vai checar
+#   $Speed -> Velocidade que a interface deve estar
+##################################################################
+function checaInterface(){
+
+    comand=`ethtool eth0 | grep "10Mb" | cut -d: -f2 | cut -d/ -f1`
+    if [ -z "$comand" ]
+      then
+          echo "J.A.R.B.A.S LOG: não foi alterada a velocidade das interfaces"
+      else
+          echo "funcionando"
+    fi
+
 }
