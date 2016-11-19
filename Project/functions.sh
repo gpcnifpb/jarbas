@@ -85,19 +85,18 @@ function pingCheck() {
 #   $1 -> Numero de Rodadas
 ##################################################################
 function runSemAtaque() {
-	numRodadas="$1"
+	numRodada="$1"
 	tipoDeExperimento="SemAtaque"
 
-  	echo "Executando sem ataque na rodada $1"
+  echo "Executando sem ataque na rodada $1"
 	echo "Executando função em atacado: "
-	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
+	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodada $tipoDeExperimento &
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado' $numRodada $tipoDeExperimento &
   for i in `seq 1 6`
   do
-    sshpass -p 'vagrant' ssh root@192.168.0.$i '/gpcn/clientes/scripts/jarbas run cliente '$numRodadas $tipoDeExperimento &
-    echo "OUCH $i clients"
+    sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /gpcn/clientes/scripts/jarbas run cliente '$numRodada $tipoDeExperimento &
   done
-  echo 'OUCH Esperando 1080 segundos'
-  sleep 1080
+
 }
 
 ##################################################################
@@ -118,19 +117,18 @@ function runComAtaque() {
 #   $1 -> Numero de Rodadas
 #   $2 -> Tipo do experimento
 ##################################################################
-function funcAtacado() {
+function runAtacado() {
 	echo "Iniciando função em atacado:"
-	COUNT=0
-	numRodadas="$1"
+	numRodada="$1"
 	tipoDeExperimento="$2"
 
-	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/$tipoDeExperimento_$numRodadas &
+	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/$tipoDeExperimento_$numRodada &
   sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/cpu_$numRodadas.log &
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/disk_$numRodadas.log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/memr_$numRodadas.log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/memw_$numRodadas.log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/cpu_$numRodada.log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/disk_$numRodada.log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/memr_$numRodada.log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/memw_$numRodada.log &
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup &
 
 
@@ -140,22 +138,23 @@ function funcAtacado() {
 ##################################################################
 # Objetivo: inicializar os clientes
 # Argumentos:
-#   $numCliente->
-#
+#  $1 -> Numero de Rodadas
+#  $2 -> Tipo do experimento
 ##################################################################
-function funcCliente(){
+function runCliente(){
   echo "iniciando função nos clientes:"
   COUNT=0
-  numClient="$1"
+  numRodada="$1"
+  tipoDeExperimento="$2"
 
   ethtool -s eth1 speed 10 duplex full
   ethtool -s eth2 speed 10 duplex full
-
-  tcpdump -i eth0 -U -w client_$numClient.cap &
+##Tcpdump sem sentido revisar
+# tcpdump -i eth0 -U -w client_$numRodada.cap &
 #Ping Atacado
-  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_$numClient.clt_01_srv_01.txt &
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_$numRodada_$tipoDeExperimento.srv_01.txt &
 #Ping Nao-Atacado
-  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_$numClient.clt_01_srv_02.txt &
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_$numRodada_$tipoDeExperimento.srv_02.txt &
 #Start Siege
   siege -c 100 192.168.10.201 &
 #Finalizando
