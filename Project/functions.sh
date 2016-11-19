@@ -121,14 +121,15 @@ function runAtacado() {
 	echo "Iniciando função em atacado:"
 	numRodada="$1"
 	tipoDeExperimento="$2"
+  time=`date +%s`
 
-	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$tipoDeExperimento"_"$numRodada" &
+	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
   sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/cpu_$numRodada.log &
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/disk_$numRodada.log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/memr_$numRodada.log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/memw_$numRodada.log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup &
 
 
@@ -146,15 +147,16 @@ function runCliente(){
   COUNT=0
   numRodada="$1"
   tipoDeExperimento="$2"
+  time=`date +%s`
 
   ethtool -s eth1 speed 10 duplex full
   ethtool -s eth2 speed 10 duplex full
 ##Tcpdump sem sentido revisar
 # tcpdump -i eth0 -U -w client_$numRodada.cap &
 #Ping Atacado
-  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.txt &
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
 #Ping Nao-Atacado
-  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_02.txt &
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
 #Start Siege
   siege -c 100 192.168.10.201 &
 #Finalizando
