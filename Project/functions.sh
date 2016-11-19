@@ -19,7 +19,6 @@ function run() {
 
 }
 
-
 ##################################################################
 # Objetivo: Checar ping com a máquina
 # Argumentos:
@@ -88,7 +87,7 @@ function runSemAtaque() {
 	numRodadas="$1"
 	tipoDeExperimento="SemAtaque"
 
-  	echo "Executando sem ataque na rodada $1"
+  echo "Executando sem ataque na rodada $1"
 	echo "Executando função em atacado: "
 	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
 }
@@ -100,7 +99,7 @@ function runSemAtaque() {
 #   $2 -> Exit status (optional)
 ##################################################################
 function runComAtaque() {
-  	numRodadas=$1
+  	numRodada=$1
   	echo "Executando com ataque na rodada $1"
 }
 
@@ -140,17 +139,19 @@ function runXenServer() {
   echo "Iniciando monitoramento XenServer"
   numeroRodada="$1"
   tipoDeExperimento="$2"
+  time=`date +%s`
 
   # TODO add timestamp to log name
   # TODO check vmstat
 
-  tcpdump -i eth1 -s 0 -U >> /path/to/log/$2_eth1_$1
-  tcpdump -i vif1.0 -s 0 -U >> /path/to/log/$2_vif1_$1
-  tcpdump -i vif2.0 -s 0 -U >> /path/to/log/$2_vif2_$1
-  vmstat -n 1 > /path/to/log/$2_vmstat_$1
+  tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
 
+  killall -s SIGTERM tcpdump
   killall vmstat
-  killall tcpdump
+  killall xenserver.sh
 }
 
 ##################################################################
