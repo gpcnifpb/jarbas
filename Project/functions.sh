@@ -81,7 +81,7 @@ function pingCheck() {
 ##################################################################
 # Objetivo: Executa o experimento sem ataque (Só clientes)
 # Argumentos:
-#   $1 -> Numero de Rodadas
+#   $1 -> Numero da Rodada
 ##################################################################
 function runSemAtaque() {
 	numRodadas="$1"
@@ -99,14 +99,28 @@ function runSemAtaque() {
 #   $2 -> Exit status (optional)
 ##################################################################
 function runComAtaque() {
-  	numRodada=$1
+  	numRodada="$1"
+    tipoDeExperimento="$2"
   	echo "Executando com ataque na rodada $1"
+
+    sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
+    sshpass -p 'vagrant' ssh root@192.168.0.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado '$numRodadas $tipoDeExperimento
+
+    for i in `seq 1 6`
+    do
+      sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /gpcn/clientes/scripts/jarbas run cliente '$numRodada $tipoDeExperimento &
+    done
+
+    for i in `seq 7 16`
+    do
+      sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /gpcn/atacantes/scripts/jarbas run atacante '$numRodada $tipoDeExperimento &
+    done
 }
 
 ##################################################################
 # Objetivo: Inicia monitoramento de dados no servidor atacado.
 # Argumentos:
-#   $1 -> Numero de Rodadas
+#   $1 -> Numero da Rodada
 #   $2 -> Tipo do experimento
 ##################################################################
 function funcAtacado() {
@@ -132,7 +146,7 @@ function funcAtacado() {
 ##################################################################
 # Objetivo: Inicia monitoramento de dados no Hypervisor.
 # Argumentos:
-#   $1 -> Numero de Rodadas
+#   $1 -> Numero da Rodada
 #   $2 -> Tipo do experimento
 ##################################################################
 function runXenServer() {
@@ -140,9 +154,6 @@ function runXenServer() {
   numeroRodada="$1"
   tipoDeExperimento="$2"
   time=`date +%s`
-
-  # TODO add timestamp to log name
-  # TODO check vmstat
 
   tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
@@ -157,7 +168,7 @@ function runXenServer() {
 ##################################################################
 # Objetivo: Inicia monitoramento no vizinho ao atacado (Monitorado)
 # Argumentos:
-#   $1 -> Numero de Rodadas
+#   $1 -> Numero da Rodada
 #   $2 -> Tipo do experimento
 ##################################################################
 function runMonitorado() {
@@ -165,15 +176,9 @@ function runMonitorado() {
   numeroRodada="$1"
   tipoDeExperimento="$2"
   COUNT=0
+  time=`date +%s`
 
-  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/$numeroRodada &
-
-  while [ $COUNT != 840 ]
-  do
-  netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/socket_$numeroRodada.log
-  sleep 1
-  COUNT=$((COUNT+1))
-  done
+  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
 
   # TODO Executar simultaneamente os comandos abaixo.
 
@@ -190,6 +195,30 @@ function runMonitorado() {
   sleep 10
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
+  while [ $COUNT != 840 ]
+  do
+    netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+    sleep 1
+    COUNT=$((COUNT+1))
+  done
+
   killall collectl
 
+}
+##################################################################
+# Objetivo: Inicia ataque ao ATACADO
+##################################################################
+function runAtacante() {
+  ethtool -s eth0 speed 10 duplex full
+  sleep 60
+
+  #Start t50
+  #/root/t50-5.4.1/t50 10.0.24.12 --flood --turbo &
+  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
+
+  sleep 720
+  killall t50
+
+  echo '1' >> /root/log
+  sleep 5
 }
