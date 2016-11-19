@@ -122,7 +122,7 @@ function runAtacado() {
 	numRodada="$1"
 	tipoDeExperimento="$2"
 
-	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/$tipoDeExperimento_$numRodada &
+	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$tipoDeExperimento"_"$numRodada" &
   sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
   sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/cpu_$numRodada.log &
@@ -152,9 +152,9 @@ function runCliente(){
 ##Tcpdump sem sentido revisar
 # tcpdump -i eth0 -U -w client_$numRodada.cap &
 #Ping Atacado
-  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_$numRodada_$tipoDeExperimento.srv_01.txt &
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.txt &
 #Ping Nao-Atacado
-  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_$numRodada_$tipoDeExperimento.srv_02.txt &
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_02.txt &
 #Start Siege
   siege -c 100 192.168.10.201 &
 #Finalizando
