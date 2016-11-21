@@ -72,44 +72,44 @@ do
 		fi
 
 		;;
-          
+
          check)
-         	checkArgs="$3" 
+         	checkArgs="$3"
 
          	if [ -z "$checkArgs" ]
          	then
          		echo "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
          	else
-			        		
+
 			case $checkArgs in
 
 				ping)
 					numClients="10"
 					numSlaves="6"
-					
+
 					pingCheck $numClients $numSlaves
-					
+
 	#				pingArgs="$4"
 #
 #					if [ -z "$pingArgs" ]
 #					  then
 #					    numClients="10"
-#					    numSlaves="6"	
+#					    numSlaves="6"
 #					  else
-#						echo "PRECISA IMPLEMENTAR"					  	
+#						echo "PRECISA IMPLEMENTAR"
 #						case $pingArgs in
 #							-nc| --num-clients)
 #								numClients="$5"
-#								
+#
 #								if [ -z "$numClients" ]
 #								  then
 #								    numClients="10"
 #								fi
-#			
+#
 #								shift
 #
-#								;;						
-#	
+#								;;
+#
 #							-ns| --num-slaves)
 #								numSlaves="$5"
 #
@@ -121,26 +121,26 @@ do
 						#		shift
 						#		;;
 						#	*)
-          					#		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1						
+          					#		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1
 						#esac
 
-					#fi	
+					#fi
 
 					;;
 				*)
-          				echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1		
+          				echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1
 			esac
 			shift
          	fi
-         	
+
          	;;
-         
+
 	atacado)
 		echo "Me execute como atacado"
 		numRodadas="$3"
 		tipoDeExperimento="$4"
-		
-		funcAtacado $numRodadas $tipoDeExperimento
+
+		runAtacado $numRodadas $tipoDeExperimento
 		;;
 
         *)
@@ -156,5 +156,3 @@ do
   esac
   shift
 done
-
-
