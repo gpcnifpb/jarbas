@@ -134,19 +134,32 @@ function runAtacado() {
 	numRodada="$1"
 	tipoDeExperimento="$2"
   time=`date +%s`
+#TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
+  #START stressng
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s
 
-	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
-  sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
-  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup &
+  #START collectl
+  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada"
 
+  #START teste CPU e memória
+    sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+    sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+    sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+
+  #START teste de disco
+    sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+    verification=`echo $?`
+    if [[ verification eq 0 ]];
+      then
+        echo "funcionou"
+        sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
+      else
+        echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
+        exit 1
+      fi
+    sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
 	killall collectl
-	killall jarbas
 }
 
 ##################################################################
@@ -183,24 +196,32 @@ function runMonitorado() {
   tipoDeExperimento="$2"
   COUNT=0
   time=`date +%s`
+#TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
+#START stressng
+stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s
 
+#START o collectl
   collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
 
-  # TODO Executar simultaneamente os comandos abaixo.
-
-  sleep 70
+#START teste de disco
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  sleep 10
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/cpu_$numeroRodada.log
-  sleep 10
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/disk_$numeroRodada.log
-  sleep 10
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/memr_$numeroRodada.log
-  sleep 10
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/memw_$numeroRodada.log
-  sleep 10
+  verification=`echo $?`
+  if [[ verification eq 0 ]];
+    then
+      echo "funcionou"
+        sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
+    else
+      echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
+      exit 1
+    fi
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
+#START teste de CPU e Memória
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
+
+#Start netstat
   while [ $COUNT != 840 ]
   do
     netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
@@ -209,6 +230,7 @@ function runMonitorado() {
   done
 
   killall collectl
+  killall netstat
 
 }
 ##################################################################
@@ -244,7 +266,8 @@ function runCliente(){
   ethtool -s eth1 speed 10 duplex full
   ethtool -s eth2 speed 10 duplex full
 ##Tcpdump sem sentido revisar
-# tcpdump -i eth0 -U -w client_$numRodada.cap &
+ tcpdump -i eth1 -U -w client_$numRodada.cap &
+ tcpdump -i eth2 -U -w client_$numRodada.cap &
 #Ping Atacado
   ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
 #Ping Nao-Atacado
@@ -263,8 +286,10 @@ function runCliente(){
 #   $Speed -> Velocidade que a interface deve estar
 ##################################################################
 function checaInterface(){
+  speed=$1
+  interface=$2
 
-    comand=`ethtool eth0 | grep "10Mb" | cut -d: -f2 | cut -d/ -f1`
+    comand=`ethtool "$interface" | grep "$speed" | cut -d: -f2 | cut -d/ -f1`
     if [ -z "$comand" ]
       then
           echo "J.A.R.B.A.S LOG: não foi alterada a velocidade das interfaces"
