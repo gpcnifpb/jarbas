@@ -84,12 +84,18 @@ function pingCheck() {
 #   $1 -> Numero da Rodada
 ##################################################################
 function runSemAtaque() {
-	numRodadas="$1"
+	numRodada="$1"
 	tipoDeExperimento="SemAtaque"
 
   echo "Executando sem ataque na rodada $1"
 	echo "Executando função em atacado: "
-	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodadas $tipoDeExperimento
+	sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodada $tipoDeExperimento &
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado' $numRodada $tipoDeExperimento &
+  for i in `seq 1 6`
+  do
+    sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /gpcn/clientes/scripts/jarbas run cliente '$numRodada $tipoDeExperimento &
+  done
+
 }
 
 ##################################################################
@@ -123,25 +129,25 @@ function runComAtaque() {
 #   $1 -> Numero da Rodada
 #   $2 -> Tipo do experimento
 ##################################################################
-function funcAtacado() {
+function runAtacado() {
 	echo "Iniciando função em atacado:"
-	COUNT=0
-	numRodadas="$1"
+	numRodada="$1"
 	tipoDeExperimento="$2"
+  time=`date +%s`
 
-	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/$tipoDeExperimento_$numRodadas &
+	collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
+  sshpass -p 'vagrant' ssh root@192.168.0.200 'stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s' &
+  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup &
 
-	while [ $COUNT != 60 ]
-	do
-		netstat -taupen | grep 80 | wc -l >> /gpcn/atacado/logs/netstat/socket_$tipoDeExperimento_$numRodadas.log
-		sleep 1
-		COUNT=$((COUNT+1))
-	done
 
 	killall collectl
 	killall jarbas
 }
-
 
 ##################################################################
 # Objetivo: Inicia monitoramento de dados no Hypervisor.
@@ -221,4 +227,49 @@ function runAtacante() {
 
   echo '1' >> /root/log
   sleep 5
+
+##################################################################
+# Objetivo: inicializar os clientes
+# Argumentos:
+#  $1 -> Numero de Rodadas
+#  $2 -> Tipo do experimento
+##################################################################
+function runCliente(){
+  echo "iniciando função nos clientes:"
+  COUNT=0
+  numRodada="$1"
+  tipoDeExperimento="$2"
+  time=`date +%s`
+
+  ethtool -s eth1 speed 10 duplex full
+  ethtool -s eth2 speed 10 duplex full
+##Tcpdump sem sentido revisar
+# tcpdump -i eth0 -U -w client_$numRodada.cap &
+#Ping Atacado
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
+#Ping Nao-Atacado
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
+#Start Siege
+  siege -c 100 192.168.10.201 &
+#Finalizando
+  killall -s SIGINT ping
+  killall -s SIGINT siege
+  killall -s SIGINT tcpdump
+
+##################################################################
+# Objetivo: Checar se a velocidade da interface foi definida corretamente
+# Argumentos:
+#   $Inter-> Interface que vai checar
+#   $Speed -> Velocidade que a interface deve estar
+##################################################################
+function checaInterface(){
+
+    comand=`ethtool eth0 | grep "10Mb" | cut -d: -f2 | cut -d/ -f1`
+    if [ -z "$comand" ]
+      then
+          echo "J.A.R.B.A.S LOG: não foi alterada a velocidade das interfaces"
+      else
+          echo "funcionando"
+    fi
+
 }
