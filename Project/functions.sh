@@ -134,30 +134,31 @@ function runAtacado() {
 	numRodada="$1"
 	tipoDeExperimento="$2"
   time=`date +%s`
+
 #TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
-  #START stressng
-  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s
 
-  #START collectl
-  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada"
+#START stressng
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
 
-  #START teste CPU e memória
-    sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
-    sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
-    sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+#START collectl
+  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
 
-  #START teste de disco
-    sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-    verification=`echo $?`
-    if [[ verification eq 0 ]];
-      then
-        echo "funcionou"
-        sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
-      else
-        echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
-        exit 1
-      fi
-    sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+#START teste CPU e memória
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+
+#START teste de disco
+  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+  verification=`echo $?`
+  if [[ verification eq 0 ]];
+    then
+      sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
+    else
+      echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
+      exit 1
+    fi
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
 	killall collectl
 }
@@ -197,29 +198,29 @@ function runMonitorado() {
   COUNT=0
   time=`date +%s`
 #TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
-#START stressng
-stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s
 
 #START o collectl
   collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+
+#START stressng
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+
+#START teste de CPU e Memória
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
 
 #START teste de disco
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   verification=`echo $?`
   if [[ verification eq 0 ]];
     then
-      echo "funcionou"
         sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
     else
       echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
       exit 1
     fi
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
-
-#START teste de CPU e Memória
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
 
 #Start netstat
   while [ $COUNT != 840 ]
@@ -282,8 +283,9 @@ function runCliente(){
 ##################################################################
 # Objetivo: Checar se a velocidade da interface foi definida corretamente
 # Argumentos:
-#   $Inter-> Interface que vai checar
-#   $Speed -> Velocidade que a interface deve estar
+#   $speed -> Velocidade que a interface deve estar
+#   $interface-> Interface que vai checar
+
 ##################################################################
 function checaInterface(){
   speed=$1
