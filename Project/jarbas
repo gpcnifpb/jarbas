@@ -1,5 +1,5 @@
 #!/bin/bash
-/home/vagrant/jarbas/Project/functions.sh
+. /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
@@ -19,136 +19,160 @@ do
 
   case $key in
     --configure)
-      machineType="$2"
-      case $machineType  in
-        atacado)
-          echo "Atacado"
-          break
-          ;;
-        monitorado)
-          echo "Monitorado"
-          break
-          ;;
-        atacante)
-          echo "Atacante"
-          break
-          ;;
-        cliente)
-          echo "Cliente"
-          break
-          ;;
-        figurantes)
-          echo "Figurantes"
-          break
-          ;;
-        hypervisor)
-          echo "Hypervisor"
-          break
-          ;;
-        *)
-          echo "J.A.R.B.A.S LOG: Não digitou nenhum tipo da máquina." ; exit 1
-      esac
-      shift
-      ;;
-
-    run)
-      if [ -z "$2" ]
-      then
-        echo "Executar o run com valores padrão."
-        run $numRodadas
-        exit 1;
-      fi
-
-      args="$2"
-      case $args in
-        -r| --rodadas)
-          numRodadas="$3" #mover para dentro do else
-
-		if [ -z "$numRodadas" ]
-		then
-			echo "J.A.R.B.A.S LOG: Argumento VAZIO depois de --rodadas (-r)" ; exit 1
-		else
-			run $numRodadas
-		fi
-
-		;;
-
-         check)
-         	checkArgs="$3"
-
-         	if [ -z "$checkArgs" ]
-         	then
-         		echo "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
-         	else
-
-			case $checkArgs in
-
-				ping)
-					numClients="10"
-					numSlaves="6"
-
-					pingCheck $numClients $numSlaves
-
-	#				pingArgs="$4"
-#
-#					if [ -z "$pingArgs" ]
-#					  then
-#					    numClients="10"
-#					    numSlaves="6"
-#					  else
-#						echo "PRECISA IMPLEMENTAR"
-#						case $pingArgs in
-#							-nc| --num-clients)
-#								numClients="$5"
-#
-#								if [ -z "$numClients" ]
-#								  then
-#								    numClients="10"
-#								fi
-#
-#								shift
-#
-#								;;
-#
-#							-ns| --num-slaves)
-#								numSlaves="$5"
-#
-			#					if [ -z "$numSlaves" ]
-			#					  then
-			#					    numSlaves="6"
-			#					fi
-			#
-						#		shift
-						#		;;
-						#	*)
-          					#		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1
-						#esac
-
-					#fi
-
-					;;
-				*)
-          				echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1
-			esac
-			shift
-         	fi
-
-         	;;
-
-	atacado)
-		echo "Me execute como atacado"
-		numRodadas="$3"
-		tipoDeExperimento="$4"
-
-		runAtacado $numRodadas $tipoDeExperimento
-		;;
-
-        *)
-          echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
-      esac
-      #shift
+    machineType="$2"
+    case $machineType  in
+      atacado)
+      echo "Atacado"
       break
       ;;
+      monitorado)
+      echo   "Monitorado"
+      break
+      ;;
+      atacante)
+      echo "Atacante"
+      break
+      ;;
+      cliente)
+      echo "Cliente"
+      break
+      ;;
+      figurantes)
+      echo "Figurantes"
+      break
+      ;;
+      hypervisor)
+      echo "Hypervisor"
+      break
+      ;;
+      *)
+      echo "J.A.R.B.A.S LOG: Não digitou nenhum tipo da máquina." ; exit 1
+    esac
+    shift
+    ;;
+
+    run)
+    if [ -z "$2" ]
+    then
+      echo "Executar o run com valores padrão."
+      run $numRodadas
+      exit 1;
+    fi
+
+    args="$2"
+    case $args in
+      -r| --rodadas)
+      numRodadas="$3" #mover para dentro do else
+
+      if [ -z "$numRodadas" ]
+      then
+        echo "J.A.R.B.A.S LOG: Argumento VAZIO depois de --rodadas (-r)" ; exit 1
+      else
+        run $numRodadas
+      fi
+
+      ;;
+
+      check)
+      checkArgs="$3"
+
+      if [ -z "$checkArgs" ]
+      then
+        echo "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
+      else
+
+        case $checkArgs in
+
+          ping)
+          numClients="10"
+          numSlaves="6"
+
+          pingCheck $numClients $numSlaves
+
+          #				pingArgs="$4"
+          #
+          #					if [ -z "$pingArgs" ]
+          #					  then
+          #					    numClients="10"
+          #					    numSlaves="6"
+          #					  else
+          #						echo "PRECISA IMPLEMENTAR"
+          #						case $pingArgs in
+          #							-nc| --num-clients)
+          #								numClients="$5"
+          #
+          #								if [ -z "$numClients" ]
+          #								  then
+          #								    numClients="10"
+          #								fi
+          #
+          #								shift
+          #
+          #								;;
+          #
+          #							-ns| --num-slaves)
+          #								numSlaves="$5"
+          #
+          #					if [ -z "$numSlaves" ]
+          #					  then
+          #					    numSlaves="6"
+          #					fi
+          #
+          #		shift
+          #		;;
+          #	*)
+          #		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1
+          #esac
+
+          #fi
+
+          ;;
+          *)
+          echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1
+        esac
+        shift
+      fi
+
+      ;;
+
+      atacado)
+      echo "Me execute como atacado"
+      numRodadas="$3"
+      tipoDeExperimento="$4"
+
+      runAtacado $numRodadas $tipoDeExperimento
+      ;;
+
+      monitorado)
+      echo "Me execute como monitorado"
+      numRodadas="$3"
+      tipoDeExperimento="$4"
+
+      runMonitorado $numRodadas $tipoDeExperimento
+      ;;
+
+      cliente)
+      echo "Me execute como cliente"
+      numRodadas="$3"
+      tipoDeExperimento="$4"
+
+      runCliente $numRodadas $tipoDeExperimento
+      ;;
+
+      atacante)
+      echo "Me execute como atacante"
+      numRodadas="$3"
+      tipoDeExperimento="$4"
+
+      runAtacante $numRodadas $tipoDeExperimento
+      ;;
+
+      *)
+      echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
+    esac
+    #shift
+    break
+    ;;
 
     *)
     echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO" ; exit 1
