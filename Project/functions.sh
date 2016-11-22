@@ -135,32 +135,21 @@ function runAtacado() {
 	tipoDeExperimento="$2"
   time=`date +%s`
 
-#TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
+  tcpdump -i eth0 -U -w atacado_$numRodada.cap &
 
-#START stressng
   stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
-
-#START collectl
   collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
 
-#START teste CPU e memória
   sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
   sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
   sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
 
-#START teste de disco
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  verification=`echo $?`
-  if [[ verification eq 0 ]];
-    then
-      sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
-    else
-      echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
-      exit 1
-    fi
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
-	killall collectl
+  killall collectl
+	killall tcpdump
 }
 
 ##################################################################
@@ -197,32 +186,19 @@ function runMonitorado() {
   tipoDeExperimento="$2"
   COUNT=0
   time=`date +%s`
-#TODO adicionar o comando tcpdump para as interfaces exemplo: tcpdump -i eth1 -U -w client_$numRodada.cap &
 
-#START o collectl
+  tcpdump -i eth1 -U -w client_$numRodada.cap &
   collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-
-#START stressng
   stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
 
-#START teste de CPU e Memória
   sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
   sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
   sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
 
-#START teste de disco
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  verification=`echo $?`
-  if [[ verification eq 0 ]];
-    then
-        sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
-    else
-      echo "J.A.R.B.A.S LOG: Primeiro comando não rodou corretamente "
-      exit 1
-    fi
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
-#Start netstat
   while [ $COUNT != 840 ]
   do
     netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
@@ -232,8 +208,8 @@ function runMonitorado() {
 
   killall collectl
   killall netstat
-
 }
+
 ##################################################################
 # Objetivo: Inicia ataque ao ATACADO
 ##################################################################
@@ -250,6 +226,7 @@ function runAtacante() {
 
   echo '1' >> /root/log
   sleep 5
+}
 
 ##################################################################
 # Objetivo: inicializar os clientes
@@ -257,7 +234,7 @@ function runAtacante() {
 #  $1 -> Numero de Rodadas
 #  $2 -> Tipo do experimento
 ##################################################################
-function runCliente(){
+function runCliente() {
   echo "iniciando função nos clientes:"
   COUNT=0
   numRodada="$1"
@@ -279,6 +256,7 @@ function runCliente(){
   killall -s SIGINT ping
   killall -s SIGINT siege
   killall -s SIGINT tcpdump
+}
 
 ##################################################################
 # Objetivo: Checar se a velocidade da interface foi definida corretamente
@@ -287,7 +265,7 @@ function runCliente(){
 #   $interface-> Interface que vai checar
 
 ##################################################################
-function checaInterface(){
+function checaInterface() {
   speed=$1
   interface=$2
 
