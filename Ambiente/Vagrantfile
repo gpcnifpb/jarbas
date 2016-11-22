@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
       apt-get -y install build-essentials
       apt-get -y install git
       cd /jarbas/
+      cd /home
       git clone https://github.com/gpcnifpb/jarbas.git
 
     SHELL
