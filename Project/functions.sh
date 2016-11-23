@@ -143,31 +143,31 @@ function runAtacado() {
 	tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` tcpdump" >> jarbas.log
-  tcpdump -i eth0 -U -w atacado_$numRodada.cap &
+  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas.log
+  # tcpdump -i eth0 -U -w atacado_$numRodada.cap &
 
-  echo "`date +%s` stress ng" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas.log
   # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 2s &
-  echo "`date +%s` collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas.log
   # collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
 
-  echo "`date +%s` sysbench cpu" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas.log
   # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
-  echo "`date +%s` sysbench memory" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
-  echo "`date +%s` sysbench memory" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
 
-  echo "`date +%s` sysbench fileio" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
   # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  echo "`date +%s` sysbench fileio" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
-  echo "`date +%s` sysbench fileio" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
-  echo "`date +%s` killal collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas.log
   # killall collectl
-	echo "`date +%s` killal tcpdump" >> jarbas.log
+	echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas.log
   # killall tcpdump
 }
 
@@ -183,20 +183,20 @@ function runXenServer() {
   tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` tcpdump eth1" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas.log
   # tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` tcpdump vif1" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump vif1" >> jarbas.log
   # tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` tcpdump vif2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas.log
   # tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` vmstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas.log
   # vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
 
-  echo "`date +%s` killall SIGTERM" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall SIGTERM" >> jarbas.log
   # killall -s SIGTERM tcpdump
-  echo "`date +%s` killall vmstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall vmstat" >> jarbas.log
   # killall vmstat
-  echo "`date +%s` killall xenserver" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall xenserver" >> jarbas.log
   # killall xenserver.sh
 }
 
@@ -213,25 +213,25 @@ function runMonitorado() {
   COUNT=0
   time=`date +%s`
 
-  echo "`date +%s` tcpdump" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas.log
   # tcpdump -i eth1 -U -w client_$numRodada.cap &
-  echo "`date +%s` collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas.log
   # collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` stress" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento stress" >> jarbas.log
   # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
 
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
 
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
-  echo "`date +%s` sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
   # while [ $COUNT != 1 ]
@@ -240,11 +240,11 @@ function runMonitorado() {
   #   sleep 1
   #   COUNT=$((COUNT+1))
   # done
-  echo "`date +%s` netstat 840" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento netstat 840" >> jarbas.log
 
-  echo "`date +%s` killall collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall collectl" >> jarbas.log
   # killall collectl
-  echo "`date +%s` killall netstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall netstat" >> jarbas.log
   # killall netstat
 }
 
@@ -252,18 +252,18 @@ function runMonitorado() {
 # Objetivo: Inicia ataque ao ATACADO
 ##################################################################
 function runAtacante() {
-  echo "`date +%s` ethtool eth0" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ethtool eth0" >> jarbas.log
   # ethtool -s eth0 speed 10 duplex full
-  echo "sleep 60"
+  #echo "sleep 60"
 
   #Start t50
   #/root/t50-5.4.1/t50 10.0.24.12 --flood --turbo &
-  echo "`date +%s` t50" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento t50" >> jarbas.log
   # t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
 
-  echo "`date +%s` sleep" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sleep" >> jarbas.log
   # sleep 720
-  echo "`date +%s` killall" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall" >> jarbas.log
   # killall t50
 
   echo '`date +%s` 1' >> jarbas.log
@@ -283,30 +283,30 @@ function runCliente() {
   tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` ethtool eth1" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ethtool eth1" >> jarbas.log
   # ethtool -s eth1 speed 10 duplex full
-  echo "`date +%s` ethtool eth2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ethtool eth2" >> jarbas.log
   # ethtool -s eth2 speed 10 duplex full
 
-  echo "`date +%s` tcpdump eth1" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas.log
   # tcpdump -i eth1 -U -w client_$numRodada.cap &
-  echo "`date +%s` tcpdump eth2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas.log
   # tcpdump -i eth2 -U -w client_$numRodada.cap &
 
-  echo "`date +%s` ping 200" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas.log
   # ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
 
-  echo "`date +%s` ping 201" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ping 201" >> jarbas.log
   # ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
 
-  echo "`date +%s` siege 201" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas.log
   # siege -c 100 192.168.10.201 &
 
-  echo "`date +%s` killall SIGINT" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
   # killall -s SIGINT ping
-  echo "`date +%s` killall SIGINT" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
   # killall -s SIGINT siege
-  echo "`date +%s` killall SIGINT" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
   # killall -s SIGINT tcpdump
 }
 
