@@ -90,8 +90,11 @@ function runSemAtaque() {
   echo "RODADA $1 SEM ATAQUE"
 
 	echo "runAtacado"
+  sshpass -p 'vagrant' ssh root@192.168.0.200 'apt-get -y install git && cd /gpcn/atacado/scripts/ && git clone https://github.com/gpcnifpb/jarbas.git'
   sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodada $tipoDeExperimento &
+
   echo "runMonitorado"
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'apt-get -y install git && cd /gpcn/monitorado/scripts/ && git clone https://github.com/gpcnifpb/jarbas.git'
   sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado' $numRodada $tipoDeExperimento &
   for i in `seq 1 6`
   do
@@ -117,7 +120,7 @@ function runComAtaque() {
     echo "runMonitorado"
     sshpass -p 'vagrant' ssh root@192.168.0.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado '$numRodadas $tipoDeExperimento
 
-    for i in `seq 1 6`/home/kelvin/Workspace/gpcn/jarbas/Project
+    for i in `seq 1 6`/home/vagrant/jarbas/Project
     do
       echo "runCliente"
       sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /gpcn/clientes/scripts/jarbas run cliente '$numRodada $tipoDeExperimento &
