@@ -147,28 +147,28 @@ function runAtacado() {
   tcpdump -i eth0 -U -w atacado_$numRodada.cap &
 
   echo "stress ng"
-  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 2s &
+  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 2s &
   echo "collectl"
-  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
+  # collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
 
   echo "sysbench cpu"
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
   echo "sysbench memory"
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
   echo "sysbench memory"
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+  # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
 
   echo "sysbench fileio"
-  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+  # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   echo "sysbench fileio"
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
+  # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
   echo "sysbench fileio"
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
   echo "killal collectl"
-  killall collectl
+  # killall collectl
 	echo "killal tcpdump"
-  killall tcpdump
+  # killall tcpdump
 }
 
 ##################################################################
@@ -183,14 +183,21 @@ function runXenServer() {
   tipoDeExperimento="$2"
   time=`date +%s`
 
-  tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+  echo "tcpdump eth1"
+  # tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  echo "tcpdump vif1"
+  # tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  echo "tcpdump vif2"
+  # tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  echo "vmstat"
+  # vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
 
-  killall -s SIGTERM tcpdump
-  killall vmstat
-  killall xenserver.sh
+  echo "killall SIGTERM"
+  # killall -s SIGTERM tcpdump
+  echo "killall vmstat"
+  # killall vmstat
+  echo "killall xenserver"
+  # killall xenserver.sh
 }
 
 ##################################################################
@@ -207,38 +214,38 @@ function runMonitorado() {
   time=`date +%s`
 
   echo "tcpdump"
-  tcpdump -i eth1 -U -w client_$numRodada.cap &
+  # tcpdump -i eth1 -U -w client_$numRodada.cap &
   echo "collectl"
-  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  # collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   echo "stress"
-  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
 
   echo "sysbench"
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
+  # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
   echo "sysbench"
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
+  # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
   echo "sysbench"
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
+  # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
 
   echo "sysbench"
-  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+  # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   echo "sysbench"
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
+  # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
   echo "sysbench"
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
 
-  while [ $COUNT != 1 ]
-  do
-    # netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
-    sleep 1
-    COUNT=$((COUNT+1))
-  done
+  # while [ $COUNT != 1 ]
+  # do
+  #   # netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+  #   sleep 1
+  #   COUNT=$((COUNT+1))
+  # done
   echo "netstat 840"
 
   echo "killall collectl"
-  killall collectl
+  # killall collectl
   echo "killall netstat"
-  killall netstat
+  # killall netstat
 }
 
 ##################################################################
@@ -251,15 +258,15 @@ function runAtacante() {
   #Start t50
   #/root/t50-5.4.1/t50 10.0.24.12 --flood --turbo &
   echo "t50"
-  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
+  # t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
 
   echo "sleep"
-  sleep 720
+  # sleep 720
   echo "killall"
-  killall t50
+  # killall t50
 
   echo '1' # >> /root/log
-  sleep 5
+  # sleep 5
 }
 
 ##################################################################
@@ -276,30 +283,30 @@ function runCliente() {
   time=`date +%s`
 
   echo "ethtool eth1"
-  ethtool -s eth1 speed 10 duplex full
+  # ethtool -s eth1 speed 10 duplex full
   echo "ethtool eth2"
-  ethtool -s eth2 speed 10 duplex full
+  # ethtool -s eth2 speed 10 duplex full
 
   echo "tcpdump eth1"
-  tcpdump -i eth1 -U -w client_$numRodada.cap &
+  # tcpdump -i eth1 -U -w client_$numRodada.cap &
   echo "tcpdump eth2"
-  tcpdump -i eth2 -U -w client_$numRodada.cap &
+  # tcpdump -i eth2 -U -w client_$numRodada.cap &
 
   echo "ping 200"
-  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
+  # ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
 
   echo "ping 201"
-  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
+  # ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
 
   echo "siege 201"
-  siege -c 100 192.168.10.201 &
+  # siege -c 100 192.168.10.201 &
 
   echo "killall SIGINT"
-  killall -s SIGINT ping
+  # killall -s SIGINT ping
   echo "killall SIGINT"
-  killall -s SIGINT siege
+  # killall -s SIGINT siege
   echo "killall SIGINT"
-  killall -s SIGINT tcpdump
+  # killall -s SIGINT tcpdump
 }
 
 ##################################################################
