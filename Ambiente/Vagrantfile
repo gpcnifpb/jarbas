@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
      sudo apt-get install -y build-essential > /dev/null
 
      echo "Installing SSHPASS"
-     sudo apt-get -y install sshpass
+     sudo apt-get -y install sshpass > /dev/null
      sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
      sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
      sudo service ssh restart
@@ -238,7 +238,7 @@ Vagrant.configure("2") do |config|
      sudo rm /home/vagrant/.ssh/known_hosts
      echo "Status SSHPASS:"
      sshpass -V
-
+     
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
