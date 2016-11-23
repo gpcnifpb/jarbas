@@ -46,8 +46,8 @@ Vagrant.configure("2") do |config|
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
-     sudo chmod +x jarbas/project/jarbas
-     sudo chmod +x jarbas/project/functions.sh
+     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
      sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
 
      echo "Installing build essentials"
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
      sudo apt-get install -y build-essential > /dev/null
 
      echo "Installing SSHPASS"
-     sudo apt-get -y install sshpass > /dev/null
+     sudo apt-get -y install sshpass
      sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
      sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
      sudo service ssh restart
@@ -98,8 +98,8 @@ Vagrant.configure("2") do |config|
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
-     sudo chmod +x jarbas/project/jarbas
-     sudo chmod +x jarbas/project/functions.sh
+     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
      sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
 
      echo "Installing SSHPASS"
@@ -164,8 +164,8 @@ Vagrant.configure("2") do |config|
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
-     sudo chmod +x jarbas/project/jarbas
-     sudo chmod +x jarbas/project/functions.sh
+     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
      sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
 
      echo "Installing SSHPASS"
@@ -242,8 +242,8 @@ Vagrant.configure("2") do |config|
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
-     sudo chmod +x jarbas/project/jarbas
-     sudo chmod +x jarbas/project/functions.sh
+     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
      sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
 
      echo "Installing build essentials"
@@ -315,8 +315,8 @@ Vagrant.configure("2") do |config|
      echo "Instalando J.A.R.B.A.S"
      sudo apt-get install -y git > /dev/null
      git clone https://github.com/gpcnifpb/jarbas.git
-     sudo chmod +x jarbas/project/jarbas
-     sudo chmod +x jarbas/project/functions.sh
+     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
      sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
 
      echo "Installing build essentials"
