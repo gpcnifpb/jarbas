@@ -1,5 +1,5 @@
 #!/bin/bash
-. /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
+. /home/vagrant/jarbas/Project/functions.sh
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
