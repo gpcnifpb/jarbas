@@ -90,15 +90,9 @@ function runSemAtaque() {
   echo "RODADA $1 SEM ATAQUE"
 
 	echo "runAtacado"
-  if [[ $numRodada -eq 1 ]]; then
-    sshpass -p 'vagrant' ssh root@192.168.0.200 'apt-get -y install git && cd /gpcn/atacado/scripts/ && git clone https://github.com/gpcnifpb/jarbas.git'
-  fi
   sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas run atacado '$numRodada $tipoDeExperimento &
 
   echo "runMonitorado"
-  if [[ $numRodada -eq 1 ]]; then
-    sshpass -p 'vagrant' ssh root@192.168.10.201 'apt-get -y install git && cd /gpcn/monitorado/scripts/ && git clone https://github.com/gpcnifpb/jarbas.git'
-  fi
   sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas run monitorado' $numRodada $tipoDeExperimento &
   for i in `seq 1 6`
   do
@@ -313,7 +307,6 @@ function runCliente() {
 # Argumentos:
 #   $speed -> Velocidade que a interface deve estar
 #   $interface-> Interface que vai checar
-
 ##################################################################
 function checaInterface() {
   speed=$1
@@ -328,3 +321,8 @@ function checaInterface() {
     fi
 
 }
+##############################################################
+#
+#
+#
+##############################################################
