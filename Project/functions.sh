@@ -111,27 +111,30 @@ function runRodada() {
   durRodada="$2"
   tipoDeExperimento="$3"
 
+  print "\tIniciando Xenserver...\n"
+  # TODO caminho dojarbas no Xenserver sshpass -p 'vagrant' ssh root@10.0.0.186 'bash '
+
   printf "\tIniciando atacado...\n"
-  sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada $tipoDeExperimento &
-  # jarbas run atacado $numRodada $tipoDeExperimento &
+  sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
+  # jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
   printf "\tIniciando monitorado...\n"
-  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada $tipoDeExperimento &
-  # jarbas run monitorado $numRodada $tipoDeExperimento &
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
+  # jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
   for c in `seq 1 6`
   do
     printf "\tIniciando cliente $c...\n"
-    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada $tipoDeExperimento &
-    # jarbas run cliente $numRodada $tipoDeExperimento &
+    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada  $tipoDeExperimento $durRodada &
+    # jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
   if [ "$tipoDeExperimento" == "ComAtaque" ]; then
     for a in `seq 7 16`
     do
       printf "\tIniciando atacante $a...\n"
-      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante '$numRodada $tipoDeExperimento &
-      # jarbas run atacante $numRodada $tipoDeExperimento &
+      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante '$numRodada $tipoDeExperimento $durRodada &
+      # jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
     done
   fi
 
@@ -155,12 +158,13 @@ function runRodada() {
 function runAtacado() {
   numRodada="$1"
   tipoDeExperimento="$2"
+  durRodada="$3"
   time=`date +%s`
 
   # tcpdump -i eth0 -U -w atacado_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
 
-  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+   #stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
   echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
   # collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
@@ -195,6 +199,7 @@ function runAtacado() {
 function runXenServer() {
   numeroRodada="$1"
   tipoDeExperimento="$2"
+  durRodada="$3"
   time=`date +%s`
 
   # tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
@@ -223,6 +228,7 @@ function runXenServer() {
 function runMonitorado() {
   numeroRodada="$1"
   tipoDeExperimento="$2"
+  durRodada="$3"
   COUNT=0
   time=`date +%s`
 
@@ -230,7 +236,7 @@ function runMonitorado() {
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
   # collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
-  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
   # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
@@ -265,6 +271,10 @@ function runMonitorado() {
 # Objetivo: Inicia ataque ao ATACADO
 ##################################################################
 function runAtacante() {
+  numRodada="$1"
+  tipoDeExperimento="$2"
+  durRodada="$3"
+
   # ethtool -s eth0 speed 10 duplex full
   echo "`date +%s` $tipoDeExperimento ethtool eth0" >> jarbas_local.log
   #echo "sleep 60"
@@ -275,7 +285,7 @@ function runAtacante() {
   echo "`date +%s` $tipoDeExperimento t50" >> jarbas_local.log
 
   # TODO Tempo de execução do experimento deve ser passaado como parametro
-  # sleep 720
+  # sleep $durRodada
   echo "`date +%s` $tipoDeExperimento sleep" >> jarbas_local.log
   # killall t50
   echo "`date +%s` $tipoDeExperimento killall" >> jarbas_local.log
