@@ -7,15 +7,37 @@
 #   $2 -> Exit status (optional)
 ##################################################################
 function run() {
-  echo "Executar função com $1 rodadas"
+  if [ $1 -gt 1 ]; then
+    printf "\n\tExecutando experimento com $1 rodadas.\n\n"
+  else
+    printf "\n\tExecutando experimento com $1 rodada.\n\n"
+  fi
   numRodadas="$1"
+  durRodada="840" # Duração padrão atual
 
   for r in `seq 1 $numRodadas`
   do
-    echo "RUN LOOP, RODADA: $r"
-    runSemAtaque $r
-    echo "AINDA NA RODADA $r"
-    runComAtaque $r
+    printf "\n##################################################################\n"
+    printf "\n######################|      RODADA $r      |######################\n"
+    printf "\n##################################################################\n\n"
+
+    runRodada $r $durRodada "SemAtaque"
+    retorno=$?
+    if [ "$retorno" == 0 ]; then
+      printf "\n###########| RODADA SEM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    else
+      printf "\n###################| RODADA SEM ATAQUE SOFREU UM ERRO |###################\n"
+      printf "\n################| [ERRO] $retorno |################\n"
+    fi
+
+    runRodada $r $durRodada "ComAtaque"
+    if [ "$retorno" == 0 ]; then
+      printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    else
+      printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
+      printf "\n################| [ERRO] $retorno |################\n"
+    fi
+
   done
 
 }
@@ -28,55 +50,55 @@ function run() {
 ##################################################################
 function pingCheck() {
 
-	NUMCLIENTS="$1"
-	NUMSLAVES="$2"
+  NUMCLIENTS="$1"
+  NUMSLAVES="$2"
 
-	ping -c1 192.168.0.200 > /dev/null
+  ping -c1 192.168.0.200 > /dev/null
 
-		if [ $? -eq 0 ]
-		 then
-			echo "Teste de ping para Atacado com sucesso"
-		 else
-			echo "Teste de ping para Atacado falhou"
-			exit
+  if [ $? -eq 0 ]
+  then
+    echo "Teste de ping para Atacado com sucesso"
+  else
+    echo "Teste de ping para Atacado falhou"
+    exit
 
-		fi
+  fi
 
-	ping -c1 192.168.10.201 > /dev/null
+  ping -c1 192.168.10.201 > /dev/null
 
-		if [ $? -eq 0 ]
-		 then
-			echo "Teste de ping para Monitorado com sucesso"
-		else
-			echo "Teste de ping para Monitorado falhou"
-			exit
-		fi
+  if [ $? -eq 0 ]
+  then
+    echo "Teste de ping para Monitorado com sucesso"
+  else
+    echo "Teste de ping para Monitorado falhou"
+    exit
+  fi
 
-	for i in `seq 1 $NUMCLIENTS`
-	do
-		ping -c1 192.168.0.$i > /dev/null
+  for i in `seq 1 $NUMCLIENTS`
+  do
+    ping -c1 192.168.0.$i > /dev/null
 
-			if [ $? -eq 0 ]
-		 	then
-				echo "Teste de ping para Cliente "$i" com sucesso"
-			else
-				echo "Teste de ping para Cliente "$i" falhou"
-				exit
-			fi
-	done
+    if [ $? -eq 0 ]
+    then
+      echo "Teste de ping para Cliente "$i" com sucesso"
+    else
+      echo "Teste de ping para Cliente "$i" falhou"
+      exit
+    fi
+  done
 
-	for i in `seq $[NUMCLIENTS+1] $[NUMCLIENTS+NUMSLAVES]`
-	do
-		ping -c1 192.168.0.$i > /dev/null
+  for i in `seq $[NUMCLIENTS+1] $[NUMCLIENTS+NUMSLAVES]`
+  do
+    ping -c1 192.168.0.$i > /dev/null
 
-			if [ $? -eq 0 ]
-		 	then
-				echo "Teste de ping para Atacante "$i" com sucesso"
-			else
-				echo "Teste de ping para Atacante "$i" falhou"
-				exit
-			fi
-	done
+    if [ $? -eq 0 ]
+    then
+      echo "Teste de ping para Atacante "$i" com sucesso"
+    else
+      echo "Teste de ping para Atacante "$i" falhou"
+      exit
+    fi
+  done
 }
 
 ##################################################################
@@ -84,51 +106,44 @@ function pingCheck() {
 # Argumentos:
 #   $1 -> Numero da Rodada
 ##################################################################
-function runSemAtaque() {
-	numRodada="$1"
-	tipoDeExperimento="SemAtaque"
-  echo "RODADA $1 SEM ATAQUE"
+function runRodada() {
+  numRodada="$1"
+  durRodada="$2"
+  tipoDeExperimento="$3"
 
-	echo "runAtacado"
+  printf "\tIniciando atacado...\n"
   sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada $tipoDeExperimento &
+  # jarbas run atacado $numRodada $tipoDeExperimento &
 
-  echo "runMonitorado"
+  printf "\tIniciando monitorado...\n"
   sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada $tipoDeExperimento &
-  for i in `seq 1 6`
+  # jarbas run monitorado $numRodada $tipoDeExperimento &
+
+  for c in `seq 1 6`
   do
-    echo "runClientes"
-    sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada $tipoDeExperimento &
+    printf "\tIniciando cliente $c...\n"
+    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada $tipoDeExperimento &
+    # jarbas run cliente $numRodada $tipoDeExperimento &
   done
 
-}
-
-##################################################################
-# Objetivo: Executa o experimento com ataque (Clientes e atacantes)
-# Argumentos:
-#   $1 -> Message
-#   $2 -> Exit status (optional)
-##################################################################
-function runComAtaque() {
-  	numRodada="$1"
-    tipoDeExperimento="ComAtaque"
-  	echo "RODADA $1 COM ATAQUE"
-
-    echo "runAtacado"
-    sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodadas $tipoDeExperimento
-    echo "runMonitorado"
-    sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado '$numRodadas $tipoDeExperimento
-
-    for i in `seq 1 6`
+  if [ "$tipoDeExperimento" == "ComAtaque" ]; then
+    for a in `seq 7 16`
     do
-      echo "runCliente"
-      sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada $tipoDeExperimento &
+      printf "\tIniciando atacante $a...\n"
+      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante '$numRodada $tipoDeExperimento &
+      # jarbas run atacante $numRodada $tipoDeExperimento &
     done
+  fi
 
-    for i in `seq 7 16`
-    do
-      echo "runAtacante"
-      sshpass -p 'vagrant' ssh root@192.168.0.$i 'bash /home/vagrant/jarbas/Project/jarbas run atacante '$numRodada $tipoDeExperimento &
-    done
+  printf "\n\tTempo de execução estimado é de $durRodada segundos.\n\n"
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    # sleep 1
+  	printf "."
+  	(( c++ ))
+  done
+  printf "\n"
 }
 
 ##################################################################
@@ -138,37 +153,37 @@ function runComAtaque() {
 #   $2 -> Tipo do experimento
 ##################################################################
 function runAtacado() {
-	echo "Iniciando função em atacado:"
-	numRodada="$1"
-	tipoDeExperimento="$2"
+  numRodada="$1"
+  tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas.log
   # tcpdump -i eth0 -U -w atacado_$numRodada.cap &
+  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas.log
-  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 2s &
-  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas.log
+  # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+  echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
   # collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
+  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas.log
   # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
-  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas_local.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
-  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
   # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
-  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas.log
   # killall collectl
-	echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
   # killall tcpdump
+  echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas_local.log
+
 }
 
 ##################################################################
@@ -178,26 +193,25 @@ function runAtacado() {
 #   $2 -> Tipo do experimento
 ##################################################################
 function runXenServer() {
-  echo "Iniciando monitoramento XenServer"
   numeroRodada="$1"
   tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas.log
   # tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` $tipoDeExperimento tcpdump vif1" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
   # tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump vif1" >> jarbas_local.log
   # tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas_local.log
   # vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+  echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento killall SIGTERM" >> jarbas.log
   # killall -s SIGTERM tcpdump
-  echo "`date +%s` $tipoDeExperimento killall vmstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall SIGTERM" >> jarbas_local.log
   # killall vmstat
-  echo "`date +%s` $tipoDeExperimento killall xenserver" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall vmstat" >> jarbas_local.log
   # killall xenserver.sh
+  echo "`date +%s` $tipoDeExperimento killall xenserver" >> jarbas_local.log
 }
 
 ##################################################################
@@ -207,32 +221,31 @@ function runXenServer() {
 #   $2 -> Tipo do experimento
 ##################################################################
 function runMonitorado() {
-  echo "Iniciando monitoramento"
   numeroRodada="$1"
   tipoDeExperimento="$2"
   COUNT=0
   time=`date +%s`
 
-  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas.log
   # tcpdump -i eth1 -U -w client_$numRodada.cap &
-  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
   # collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` $tipoDeExperimento stress" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
   # stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 840s &
+  echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   # sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
   # sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada".log
-  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
   # while [ $COUNT != 1 ]
   # do
@@ -240,33 +253,34 @@ function runMonitorado() {
   #   sleep 1
   #   COUNT=$((COUNT+1))
   # done
-  echo "`date +%s` $tipoDeExperimento netstat 840" >> jarbas.log
 
-  echo "`date +%s` $tipoDeExperimento killall collectl" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento netstat 840" >> jarbas_local.log
   # killall collectl
-  echo "`date +%s` $tipoDeExperimento killall netstat" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall collectl" >> jarbas_local.log
   # killall netstat
+  echo "`date +%s` $tipoDeExperimento killall netstat" >> jarbas_local.log
 }
 
 ##################################################################
 # Objetivo: Inicia ataque ao ATACADO
 ##################################################################
 function runAtacante() {
-  echo "`date +%s` $tipoDeExperimento ethtool eth0" >> jarbas.log
   # ethtool -s eth0 speed 10 duplex full
+  echo "`date +%s` $tipoDeExperimento ethtool eth0" >> jarbas_local.log
   #echo "sleep 60"
 
   #Start t50
   #/root/t50-5.4.1/t50 10.0.24.12 --flood --turbo &
-  echo "`date +%s` $tipoDeExperimento t50" >> jarbas.log
   # t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
+  echo "`date +%s` $tipoDeExperimento t50" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento sleep" >> jarbas.log
+  # TODO Tempo de execução do experimento deve ser passaado como parametro
   # sleep 720
-  echo "`date +%s` $tipoDeExperimento killall" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento sleep" >> jarbas_local.log
   # killall t50
+  echo "`date +%s` $tipoDeExperimento killall" >> jarbas_local.log
 
-  echo '`date +%s` 1' >> jarbas.log
+  #echo "`date +%s` 1">> jarbas_local.log
   # sleep 5
 }
 
@@ -277,37 +291,36 @@ function runAtacante() {
 #  $2 -> Tipo do experimento
 ##################################################################
 function runCliente() {
-  echo "iniciando função nos clientes:"
   COUNT=0
   numRodada="$1"
   tipoDeExperimento="$2"
   time=`date +%s`
 
-  echo "`date +%s` $tipoDeExperimento ethtool eth1" >> jarbas.log
   # ethtool -s eth1 speed 10 duplex full
-  echo "`date +%s` $tipoDeExperimento ethtool eth2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento ethtool eth1" >> jarbas_local.log
   # ethtool -s eth2 speed 10 duplex full
+  echo "`date +%s` $tipoDeExperimento ethtool eth2" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas.log
   # tcpdump -i eth1 -U -w client_$numRodada.cap &
-  echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
   # tcpdump -i eth2 -U -w client_$numRodada.cap &
+  echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas.log
   # ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
+  echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento ping 201" >> jarbas.log
   # ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
+  echo "`date +%s` $tipoDeExperimento ping 201" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas.log
   # siege -c 100 192.168.10.201 &
+  echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas_local.log
 
-  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
   # killall -s SIGINT ping
-  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall ping" >> jarbas_local.log
   # killall -s SIGINT siege
-  echo "`date +%s` $tipoDeExperimento killall SIGINT" >> jarbas.log
+  echo "`date +%s` $tipoDeExperimento killall siege" >> jarbas_local.log
   # killall -s SIGINT tcpdump
+  echo "`date +%s` $tipoDeExperimento killall tcpdump" >> jarbas_local.log
 }
 
 ##################################################################
@@ -320,13 +333,13 @@ function checaInterface() {
   speed=$1
   interface=$2
 
-    comand=`ethtool "$interface" | grep "$speed" | cut -d: -f2 | cut -d/ -f1`
-    if [ -z "$comand" ]
-      then
-          echo "J.A.R.B.A.S LOG: não foi alterada a velocidade das interfaces"
-      else
-          echo "funcionando"
-    fi
+  comand=`ethtool "$interface" | grep "$speed" | cut -d: -f2 | cut -d/ -f1`
+  if [ -z "$comand" ]
+  then
+    echo "J.A.R.B.A.S LOG: não foi alterada a velocidade das interfaces"
+  else
+    echo "funcionando"
+  fi
 
 }
 ##############################################################
