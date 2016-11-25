@@ -13,7 +13,7 @@ function run() {
     printf "\n\tExecutando experimento com $1 rodada.\n\n"
   fi
   numRodadas="$1"
-  durRodada="840" # Duração padrão atual
+  durRodada="10" # Duração padrão atual
 
   for r in `seq 1 $numRodadas`
   do
@@ -125,7 +125,7 @@ function runRodada() {
   for c in `seq 1 6`
   do
     printf "\tIniciando cliente $c...\n"
-    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente '$numRodada  $tipoDeExperimento $durRodada &
+    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
     # jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
@@ -133,7 +133,7 @@ function runRodada() {
     for a in `seq 7 16`
     do
       printf "\tIniciando atacante $a...\n"
-      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante '$numRodada $tipoDeExperimento $durRodada &
+      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
       # jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
     done
   fi
@@ -183,6 +183,13 @@ function runAtacado() {
   # sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
 
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    sleep 1
+  	(( c++ ))
+  done
+
   # killall collectl
   echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
   # killall tcpdump
@@ -210,6 +217,13 @@ function runXenServer() {
   echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas_local.log
   # vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
+
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    sleep 1
+  	(( c++ ))
+  done
 
   # killall -s SIGTERM tcpdump
   echo "`date +%s` $tipoDeExperimento killall SIGTERM" >> jarbas_local.log
@@ -260,6 +274,13 @@ function runMonitorado() {
   #   COUNT=$((COUNT+1))
   # done
 
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    sleep 1
+  	(( c++ ))
+  done
+
   echo "`date +%s` $tipoDeExperimento netstat 840" >> jarbas_local.log
   # killall collectl
   echo "`date +%s` $tipoDeExperimento killall collectl" >> jarbas_local.log
@@ -287,6 +308,14 @@ function runAtacante() {
   # TODO Tempo de execução do experimento deve ser passaado como parametro
   # sleep $durRodada
   echo "`date +%s` $tipoDeExperimento sleep" >> jarbas_local.log
+
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    sleep 1
+  	(( c++ ))
+  done
+
   # killall t50
   echo "`date +%s` $tipoDeExperimento killall" >> jarbas_local.log
 
@@ -324,6 +353,13 @@ function runCliente() {
 
   # siege -c 100 192.168.10.201 &
   echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas_local.log
+
+  c="1"
+  while [ $c -le $durRodada ]
+  do
+    sleep 1
+  	(( c++ ))
+  done
 
   # killall -s SIGINT ping
   echo "`date +%s` $tipoDeExperimento killall ping" >> jarbas_local.log
