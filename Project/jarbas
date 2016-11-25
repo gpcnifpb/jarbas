@@ -1,6 +1,25 @@
 #!/bin/bash
-. /home/vagrant/jarbas/Project/functions.sh
-# . /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
+if [ -d "/home/vagrant/jarbas/Project/" ] ; then
+  . /home/vagrant/jarbas/Project/functions.sh
+fi
+
+if [ -d "/root/gpcn/xenserver/scripts/jarbas/Project/" ] ; then
+  . /root/gpcn/xenserver/scripts/jarbas/Project/functions.sh
+fi
+
+if [ -d "/gpcn/atacado/scripts/jarbas/Project/" ] ; then
+  . /gpcn/atacado/scripts/jarbas/Project/functions.sh
+fi
+
+if [ -d "/gpcn/monitorado/scripts/jarbas/Project/" ] ; then
+  . /gpcn/monitorado/scripts/jarbas/Project/functions.sh
+fi
+
+if [ -d "/home/kelvin/Workspace/gpcn/jarbas/Project/" ] ; then
+  . /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
+fi
+
+
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
@@ -26,8 +45,6 @@ do
       echo "Atacado"
       break
       ;;
-      monitorado)
-      echo   "Monitorado"
       break
       ;;
       atacante)
@@ -85,8 +102,8 @@ do
         case $checkArgs in
 
           ping)
-          numClients="10"
-          numSlaves="6"
+          numClients="6"
+          numSlaves="10"
 
           pingCheck $numClients $numSlaves
 
@@ -140,34 +157,46 @@ do
       # echo "Me execute como atacado"
       numRodadas="$3"
       tipoDeExperimento="$4"
+      durRodada="$5"
 
-      runAtacado $numRodadas $tipoDeExperimento
+
+      runAtacado $numRodadas $tipoDeExperimento $durRodada
       ;;
 
       monitorado)
       # echo "Me execute como monitorado"
       numRodadas="$3"
       tipoDeExperimento="$4"
+      durRodada="$5"
 
-      runMonitorado $numRodadas $tipoDeExperimento
+      runMonitorado $numRodadas $tipoDeExperimento $durRodada
       ;;
 
       cliente)
       # echo "Me execute como cliente"
       numRodadas="$3"
       tipoDeExperimento="$4"
+      durRodada="$5"
 
-      runCliente $numRodadas $tipoDeExperimento
+      runCliente $numRodadas $tipoDeExperimento $durRodada
       ;;
 
       atacante)
       # echo "Me execute como atacante"
       numRodadas="$3"
       tipoDeExperimento="$4"
+      durRodada="$5"
 
-      runAtacante $numRodadas $tipoDeExperimento
+      runAtacante $numRodadas $tipoDeExperimento $durRodada
       ;;
 
+      xenserver)
+      # echo "Me execute como atacado"
+      numRodadas="$3"
+      tipoDeExperimento="$4"
+      durRodada="$5"
+
+      runXenServer $numRodadas $tipoDeExperimento $durRodada
       *)
       echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
     esac

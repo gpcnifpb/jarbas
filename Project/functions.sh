@@ -112,7 +112,7 @@ function runRodada() {
   tipoDeExperimento="$3"
 
   print "\tIniciando Xenserver...\n"
-  # TODO caminho dojarbas no Xenserver sshpass -p 'vagrant' ssh root@10.0.0.186 'bash '
+  sshpass -p 'vagrant' ssh root@10.0.0.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
 
   printf "\tIniciando atacado...\n"
   sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
