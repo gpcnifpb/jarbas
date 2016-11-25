@@ -45,8 +45,6 @@ do
       echo "Atacado"
       break
       ;;
-      break
-      ;;
       atacante)
       echo "Atacante"
       break
@@ -159,7 +157,6 @@ do
       tipoDeExperimento="$4"
       durRodada="$5"
 
-
       runAtacado $numRodadas $tipoDeExperimento $durRodada
       ;;
 
@@ -195,9 +192,10 @@ do
       numRodadas="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
-      ;;
 
       runXenServer $numRodadas $tipoDeExperimento $durRodada
+      ;;
+
       *)
       echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
     esac
