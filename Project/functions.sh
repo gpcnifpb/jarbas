@@ -111,8 +111,8 @@ function runRodada() {
   durRodada="$2"
   tipoDeExperimento="$3"
 
-  print "\tIniciando Xenserver...\n"
-  sshpass -p 'vagrant' ssh root@10.0.0.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
+  printf "\tIniciando Xenserver...\n"
+  sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
 
   printf "\tIniciando atacado...\n"
   sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
@@ -142,7 +142,7 @@ function runRodada() {
   c="1"
   while [ $c -le $durRodada ]
   do
-    # sleep 1
+    sleep 1
   	printf "."
   	(( c++ ))
   done
