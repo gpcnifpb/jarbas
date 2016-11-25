@@ -209,13 +209,13 @@ function runXenServer() {
   durRodada="$3"
   time=`date +%s`
 
-  tcpdump -i eth1 -s 0 -U >> /gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
-  tcpdump -i vif1.0 -s 0 -U >> /gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif1.0 -s 0 -U >> /root/gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   echo "`date +%s` $tipoDeExperimento tcpdump vif1" >> jarbas_local.log
-  tcpdump -i vif2.0 -s 0 -U >> /gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif2.0 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
   echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas_local.log
-  vmstat -n 1 >> /gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+  vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
 
   c="1"
@@ -278,8 +278,8 @@ function runMonitorado() {
   echo "`date +%s` $tipoDeExperimento netstat 840" >> jarbas_local.log
   killall collectl
   echo "`date +%s` $tipoDeExperimento killall collectl" >> jarbas_local.log
-  killall netstat
-  echo "`date +%s` $tipoDeExperimento killall netstat" >> jarbas_local.log
+  # killall netstat
+  # echo "`date +%s` $tipoDeExperimento killall netstat" >> jarbas_local.log
 }
 
 ##################################################################
