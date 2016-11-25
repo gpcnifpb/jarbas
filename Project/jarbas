@@ -195,6 +195,7 @@ do
       numRodadas="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
+      ;;
 
       runXenServer $numRodadas $tipoDeExperimento $durRodada
       *)
