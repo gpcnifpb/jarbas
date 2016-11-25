@@ -209,13 +209,13 @@ function runXenServer() {
   durRodada="$3"
   time=`date +%s`
 
-  tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
-  tcpdump -i vif1.0 -s 0 -U >> /root/gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif1.0 -s 0 -U >> /root/gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump vif1" >> jarbas_local.log
-  tcpdump -i vif2.0 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  tcpdump -i vif2.0 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump vif2" >> jarbas_local.log
-  vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+  vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
 
   c="1"
@@ -331,9 +331,9 @@ function runCliente() {
   ethtool -s eth2 speed 10 duplex full
   echo "`date +%s` $tipoDeExperimento ethtool eth2" >> jarbas_local.log
 
-  tcpdump -i eth1 -U -w client_$numRodada.cap &
+  tcpdump -i eth1 -U -w client_eth1_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
-  tcpdump -i eth2 -U -w client_$numRodada.cap &
+  tcpdump -i eth2 -U -w client_eth2_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
 
   ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
