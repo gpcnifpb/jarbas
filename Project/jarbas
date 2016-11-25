@@ -1,5 +1,6 @@
 #!/bin/bash
-. /home/vagrant/jarbas/Project/functions.sh
+# . /home/vagrant/jarbas/Project/functions.sh
+. /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
@@ -136,7 +137,7 @@ do
       ;;
 
       atacado)
-      echo "Me execute como atacado"
+      # echo "Me execute como atacado"
       numRodadas="$3"
       tipoDeExperimento="$4"
 
@@ -144,7 +145,7 @@ do
       ;;
 
       monitorado)
-      echo "Me execute como monitorado"
+      # echo "Me execute como monitorado"
       numRodadas="$3"
       tipoDeExperimento="$4"
 
@@ -152,7 +153,7 @@ do
       ;;
 
       cliente)
-      echo "Me execute como cliente"
+      # echo "Me execute como cliente"
       numRodadas="$3"
       tipoDeExperimento="$4"
 
@@ -160,7 +161,7 @@ do
       ;;
 
       atacante)
-      echo "Me execute como atacante"
+      # echo "Me execute como atacante"
       numRodadas="$3"
       tipoDeExperimento="$4"
 
