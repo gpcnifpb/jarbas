@@ -213,7 +213,7 @@ function runXenServer() {
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
   tcpdump -i vif6.1 -s 0 -U >> /root/gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump vif6.1" >> jarbas_local.log
-  tcpdump -i vif8.1 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  tcpdump -i vif9.1 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump vif8.1" >> jarbas_local.log
   vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
