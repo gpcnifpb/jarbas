@@ -248,8 +248,8 @@ function runMonitorado() {
 
   tcpdump -i eth1 -U -w client_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
-  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
-  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
+  #collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento" &
+  #echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
   stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
