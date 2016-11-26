@@ -15,8 +15,8 @@ if [ -d "/gpcn/monitorado/scripts/jarbas/Project/" ] ; then
   . /gpcn/monitorado/scripts/jarbas/Project/functions.sh
 fi
 
-if [ -d "/home/kelvin/Workspace/gpcn/jarbas/Project/" ] ; then
-  . /home/kelvin/Workspace/gpcn/jarbas/Project/functions.sh
+if [ -d "/home/ubuntu/jarbas/Project/" ] ; then
+  . /home/ubuntu/jarbas/Project/functions.sh
 fi
 
 
