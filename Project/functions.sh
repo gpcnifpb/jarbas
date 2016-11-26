@@ -21,22 +21,22 @@ function run() {
     printf "\n######################|      RODADA $r      |######################\n"
     printf "\n##################################################################\n\n"
 
-    #runRodada $r $durRodada "SemAtaque"
-    #retorno=$?
-    #if [ "$retorno" == 0 ]; then
-    #printf "\n###########| RODADA SEM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
-    #else
-    #printf "\n###################| RODADA SEM ATAQUE SOFREU UM ERRO |###################\n"
-    #printf "\n################| [ERRO] $retorno |################\n"
-    #fi
-
-    runRodada $r $durRodada "ComAtaque"
+  runRodada $r $durRodada "SemAtaque"
+    retorno=$?
     if [ "$retorno" == 0 ]; then
-      printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    printf "\n###########| RODADA SEM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
     else
-      printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
-      printf "\n################| [ERRO] $retorno |################\n"
+  printf "\n###################| RODADA SEM ATAQUE SOFREU UM ERRO |###################\n"
+    printf "\n################| [ERRO] $retorno |################\n"
     fi
+
+    #runRodada $r $durRodada "ComAtaque"
+    #if [ "$retorno" == 0 ]; then
+    #  printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    #else
+    #  printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
+    #  printf "\n################| [ERRO] $retorno |################\n"
+    #fi
 
   done
 
@@ -118,16 +118,16 @@ function runRodada() {
   #sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
   # jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
-  printf "\tIniciando monitorado...\n"
-  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
+  #printf "\tIniciando monitorado...\n"
+  #sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
   # jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
-  #for c in `seq 1 6`
-  #do
-  #printf "\tIniciando cliente $c...\n"
-  #sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
-  # jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
-  #done
+  for c in `seq 1 6`
+  do
+  printf "\tIniciando cliente $c...\n"
+  sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
+   jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
+  done
 
   #if [ "$tipoDeExperimento" == "ComAtaque" ]; then
   #for a in `seq 7 16`
@@ -161,27 +161,27 @@ function runAtacado() {
   durRodada="$3"
   time=`date +%s`
 
-  #tcpdump -i eth0 -U -w atacado_$numRodada.cap &
-  #echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
+  tcpdump -i eth0 -U -w atacado_$numRodada.cap &
+  echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
 
-  #stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
-  #echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
-  #collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
-  #echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
+  echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
+  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
+  echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
 
-  #sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
-  #echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas_local.log
-  #sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
-  #echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
-  #sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
-  #echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas_local.log
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+  echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
 
-  #sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
-  #echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
-  #sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
-  #echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
-  #sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
-  #echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
+  sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
 
   c="1"
   while [ $c -le $durRodada ]
@@ -190,10 +190,10 @@ function runAtacado() {
     (( c++ ))
   done
 
-  #killall collectl
-  # echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
-  #killall tcpdump
-  #echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas_local.log
+  killall collectl
+   echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
+  killall tcpdump
+  echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas_local.log
 
 }
 
