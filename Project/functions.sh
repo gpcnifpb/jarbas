@@ -111,15 +111,15 @@ function runRodada() {
   durRodada="$2"
   tipoDeExperimento="$3"
 
-  printf "\tIniciando Xenserver...\n"
-  sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
+  #printf "\tIniciando Xenserver...\n"
+  #sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
 
   #printf "\tIniciando atacado...\n"
   #sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
   # jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
-  #printf "\tIniciando monitorado...\n"
-  #sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
+  printf "\tIniciando monitorado...\n"
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
   # jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
   #for c in `seq 1 6`
@@ -270,7 +270,7 @@ function runMonitorado() {
   c="1"
   while [ $c -le $durRodada ]
   do
-    netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento"
+    netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
     sleep 1
     (( c++ ))
   done
