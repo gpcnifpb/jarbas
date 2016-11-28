@@ -111,16 +111,16 @@ function runRodada() {
   durRodada="$2"
   tipoDeExperimento="$3"
 
-  #printf "\tIniciando Xenserver...\n"
-  #sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
+  printf "\tIniciando Xenserver...\n"
+  sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
 
-  #printf "\tIniciando atacado...\n"
-  #sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
-  # jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
+  printf "\tIniciando atacado...\n"
+  sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
+   jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
-  #printf "\tIniciando monitorado...\n"
-  #sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
-  # jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
+  printf "\tIniciando monitorado...\n"
+  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
+   jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
   for c in `seq 1 6`
   do
@@ -129,14 +129,14 @@ function runRodada() {
    jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
-  #if [ "$tipoDeExperimento" == "ComAtaque" ]; then
-  #for a in `seq 7 16`
-  #do
-  #  printf "\tIniciando atacante $a...\n"
-  #  sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
-  # jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
-  #done
-  #fi
+  if [ "$tipoDeExperimento" == "ComAtaque" ]; then
+  for a in `seq 7 16`
+  do
+    printf "\tIniciando atacante $a...\n"
+    sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
+   jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
+  done
+  fi
 
   printf "\n\tTempo de execução estimado é de $durRodada segundos.\n\n"
   c="1"
