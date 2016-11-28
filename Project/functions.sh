@@ -248,16 +248,16 @@ function runMonitorado() {
 
   tcpdump -i eth1 -U -w monitorado_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
-  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/_"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
   stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 60s &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/_"$time"_cpu_"$numeroRodada".log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/_"$time"_memr_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/_"$time"_memw_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
@@ -270,7 +270,7 @@ function runMonitorado() {
   c="1"
   while [ $c -le $durRodada ]
   do
-    netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/_"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
+    netstat -taupen | grep 80 | wc -l >> /gpcn/monitorado/logs/netstat/rodada_"$numeroRodada"_"$tipoDeExperimento".log
     sleep 1
     (( c++ ))
   done
@@ -337,10 +337,10 @@ function runCliente() {
   tcpdump -i eth2 -U -w client_eth2_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
 
-  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
+  ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
   echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas_local.log
 
-  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/"$time"_ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
+  ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
   echo "`date +%s` $tipoDeExperimento ping 201" >> jarbas_local.log
 
   siege -c 100 192.168.10.201 &
