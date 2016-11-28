@@ -211,10 +211,10 @@ function runXenServer() {
   # TODO mudar diretórios das interfaces vif
   tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
-  tcpdump -i vif6.1 -s 0 -U >> /root/gpcn/xenserver/log/vif1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
-  echo "`date +%s` $tipoDeExperimento tcpdump vif6.1" >> jarbas_local.log
-  tcpdump -i vif9.1 -s 0 -U >> /root/gpcn/xenserver/log/vif2/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
-  echo "`date +%s` $tipoDeExperimento tcpdump vif8.1" >> jarbas_local.log
+  tcpdump -i vif6.0 -s 0 -U >> /root/gpcn/xenserver/log/vif6"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  echo "`date +%s` $tipoDeExperimento tcpdump vif6.0" >> jarbas_local.log
+  tcpdump -i vif7.0 -s 0 -U >> /root/gpcn/xenserver/log/vif7/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  echo "`date +%s` $tipoDeExperimento tcpdump vif7.0" >> jarbas_local.log
   vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
 
@@ -246,7 +246,7 @@ function runMonitorado() {
   COUNT=0
   time=`date +%s`
 
-  tcpdump -i eth1 -U -w client_$numRodada.cap &
+  tcpdump -i eth1 -U -w monitorado_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
   collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
@@ -333,6 +333,7 @@ function runCliente() {
 
   tcpdump -i eth1 -U -w client_eth1_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
+
   tcpdump -i eth2 -U -w client_eth2_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
 
