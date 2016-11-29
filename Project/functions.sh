@@ -13,7 +13,7 @@ function run() {
     printf "\n\tExecutando experimento com $1 rodada.\n\n"
   fi
   numRodadas="$1"
-  durRodada="60" # Duração em segundos
+  durRodada="120" # Duração em segundos
 
   for r in `seq 1 $numRodadas`
   do
@@ -30,13 +30,13 @@ function run() {
     printf "\n################| [ERRO] $retorno |################\n"
     fi
 
-    #runRodada $r $durRodada "ComAtaque"
-    #if [ "$retorno" == 0 ]; then
-    #  printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
-    #else
-    #  printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
-    #  printf "\n################| [ERRO] $retorno |################\n"
-    #fi
+    # runRodada $r $durRodada "ComAtaque"
+    # if [ "$retorno" == 0 ]; then
+    #   printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    # else
+    #   printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
+    #   printf "\n################| [ERRO] $retorno |################\n"
+    # fi
 
   done
 
@@ -111,32 +111,32 @@ function runRodada() {
   durRodada="$2"
   tipoDeExperimento="$3"
 
-  printf "\tIniciando Xenserver...\n"
-  sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
+  # printf "\tIniciando Xenserver...\n"
+  # sshpass -p 'vagrant' ssh root@10.0.4.186 'bash /root/gpcn/xenserver/scripts/jarbas/Project/jarbas run xenserver' $numRodada  $tipoDeExperimento $durRodada &
 
-  printf "\tIniciando atacado...\n"
-  sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
-   #jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
+  # printf "\tIniciando atacado...\n"
+  # sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
+  # jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
-  printf "\tIniciando monitorado...\n"
-  sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
-   #jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
+  # printf "\tIniciando monitorado...\n"
+  # sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
+  # jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
   for c in `seq 1 6`
   do
-  printf "\tIniciando cliente $c...\n"
-  sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
-   #jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
+    printf "\tIniciando cliente $c...\n"
+    sshpass -p 'vagrant' ssh root@192.168.0.$c 'bash /home/vagrant/jarbas/Project/jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
+    # jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
-  if [ "$tipoDeExperimento" == "ComAtaque" ]; then
-  for a in `seq 7 16`
-  do
-    printf "\tIniciando atacante $a...\n"
-    sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
-   #jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
-  done
-  fi
+  # if [ "$tipoDeExperimento" == "ComAtaque" ]; then
+  # for a in `seq 7 16`
+  # do
+  #   printf "\tIniciando atacante $a...\n"
+  #   sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
+  #  #jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
+  # done
+  # fi
 
   printf "\n\tTempo de execução estimado é de $durRodada segundos.\n\n"
   c="1"
@@ -253,16 +253,16 @@ function runMonitorado() {
   stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 60s &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada".log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/monitorado/logs/sysbench/"$time"_memr_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/_"$time"_disk_"$numeroRodada".log
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/_"$time"_disk_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
@@ -321,20 +321,41 @@ function runAtacante() {
 #  $2 -> Tipo do experimento
 ##################################################################
 function runCliente() {
-  COUNT=0
   numRodada="$1"
   tipoDeExperimento="$2"
   time=`date +%s`
+  c="1"
 
   ethtool -s eth1 speed 10 duplex full
-  echo "`date +%s` $tipoDeExperimento ethtool eth1" >> jarbas_local.log
+  if [$? -eq 0 ] ; then
+    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 SUCCESS" >> jarbas_local.log
+  else
+    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
+    printf "\n\tCliente X ERRO ethtool\n"
+  fi
+
   ethtool -s eth2 speed 10 duplex full
-  echo "`date +%s` $tipoDeExperimento ethtool eth2" >> jarbas_local.log
+  if [$? -eq 0 ] ; then
+    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 SUCCESS" >> jarbas_local.log
+  else
+    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
+    printf "\tErro ethtool - Cliente\n"
+    printf "\tOs IPs sao:\n"
+    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
+      printf "\t$ip\n"
+    done
+  fi
 
-  tcpdump -i eth1 -U -w client_eth1_$numRodada.cap &
-  echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
+  tcpdump -i eth1 -U -w client_eth1_$numRodada.cap > /dev/null 2>$1 & pid=$!
+  if ps -p $pid > /dev/null ; then
+    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth1 SUCCESS" >> jarbas_local.log
+  else
+    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth1 ERROR" >> jarbas_local.log
+    printf "\tErro tcpdump - Cliente\n"
+    printf ""
+  fi
 
-  tcpdump -i eth2 -U -w client_eth2_$numRodada.cap &
+  tcpdump -i eth2 -U -w client_eth2_$numRodada.cap > /dev/null 2>$1 & pid=$!
   echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
 
   ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
@@ -346,7 +367,6 @@ function runCliente() {
   siege -c 100 192.168.10.201 &
   echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas_local.log
 
-  c="1"
   while [ $c -le $durRodada ]
   do
     sleep 1
