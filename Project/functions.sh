@@ -21,22 +21,22 @@ function run() {
     printf "\n######################|      RODADA $r      |######################\n"
     printf "\n##################################################################\n\n"
 
-  runRodada $r $durRodada "SemAtaque"
+    runRodada $r $durRodada "SemAtaque"
     retorno=$?
     if [ "$retorno" == 0 ]; then
-    printf "\n###########| RODADA SEM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+      printf "\n###########| RODADA SEM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
     else
-  printf "\n###################| RODADA SEM ATAQUE SOFREU UM ERRO |###################\n"
-    printf "\n################| [ERRO] $retorno |################\n"
+      printf "\n###################| RODADA SEM ATAQUE SOFREU UM ERRO |###################\n"
+      printf "\n################| [ERRO] $retorno |################\n"
     fi
 
-    # runRodada $r $durRodada "ComAtaque"
-    # if [ "$retorno" == 0 ]; then
-    #   printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
-    # else
-    #   printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
-    #   printf "\n################| [ERRO] $retorno |################\n"
-    # fi
+    runRodada $r $durRodada "ComAtaque"
+    if [ "$retorno" == 0 ]; then
+      printf "\n###########| RODADA COM ATAQUE CONCLUÍDA COM SUCESSO! |###########\n\n"
+    else
+      printf "\n###################| RODADA COM ATAQUE SOFREU UM ERRO |###################\n"
+      printf "\n################| [ERRO] $retorno |################\n"
+    fi
 
   done
 
@@ -129,14 +129,14 @@ function runRodada() {
     # jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
-  # if [ "$tipoDeExperimento" == "ComAtaque" ]; then
-  # for a in `seq 7 16`
-  # do
-  #   printf "\tIniciando atacante $a...\n"
-  #   sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
-  #  #jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
-  # done
-  # fi
+  if [ "$tipoDeExperimento" == "ComAtaque" ]; then
+    for a in `seq 7 16`
+    do
+      printf "\tIniciando atacante $a...\n"
+      sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
+      # jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
+    done
+  fi
 
   printf "\n\tTempo de execução estimado é de $durRodada segundos.\n\n"
   c="1"
@@ -191,7 +191,7 @@ function runAtacado() {
   done
 
   killall collectl
-   echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
+  echo "`date +%s` $tipoDeExperimento killal collectl" >> jarbas_local.log
   killall tcpdump
   echo "`date +%s` $tipoDeExperimento killal tcpdump" >> jarbas_local.log
 
