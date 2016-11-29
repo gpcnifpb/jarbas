@@ -291,27 +291,18 @@ function runAtacante() {
   durRodada="$3"
 
   ethtool -s eth0 speed 10 duplex full
-  echo "`date +%s` $tipoDeExperimento ethtool eth0" >> jarbas_local.log
-  #echo "sleep 60"
+  logProcess $numRodada $tipoDeExperimento "Ethtool eth0" $?
 
-  #Start t50
-  #/root/t50-5.4.1/t50 10.0.24.12 --flood --turbo &
-  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP &
-  echo "`date +%s` $tipoDeExperimento t50" >> jarbas_local.log
+  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP > /dev/null 2>&1 $ pid=$!
+  checkPid $pid
+  logProcess $numRodada $tipoDeExperimento "t50" $?
 
-  # TODO Tempo de execução do experimento deve ser passaado como parametro
+  # Duração do ataque (Duração do experimento)
   sleep $durRodada
-  echo "`date +%s` $tipoDeExperimento sleep" >> jarbas_local.log
-
-  c="1"
-  while [ $c -le $durRodada ]
-  do
-    sleep 1
-    (( c++ ))
-  done
+  logProcess $numRodada $tipoDeExperimento "Sleep $durRodada" $?
 
   killall t50 > /dev/null
-  echo "`date +%s` $tipoDeExperimento killall" >> jarbas_local.log
+  logProcess $numRodada $tipoDeExperimento "Killall t50" $?
 }
 
 ##################################################################
@@ -324,7 +315,6 @@ function runCliente() {
   numRodada="$1"
   tipoDeExperimento="$2"
   time=`date +%s`
-  c="1"
 
   ethtool -s eth1 speed 10 duplex full
   logProcess $numRodada $tipoDeExperimento "Ethtool eth1" $?
@@ -350,18 +340,14 @@ function runCliente() {
   checkPid $!
   logProcess $numRodada $tipoDeExperimento "Siege" $?
 
-  while [ $c -le $durRodada ]
-  do
-    sleep 1
-    (( c++ ))
-  done
+  sleep $durRodada
 
   killall -s SIGINT ping
-  echo "`date +%s` $tipoDeExperimento killall ping" >> jarbas_local.log
+  logProcess $tipoDeExperimento "Killall ping" $?
   killall -s SIGINT siege
-  echo "`date +%s` $tipoDeExperimento killall siege" >> jarbas_local.log
+  logProcess $tipoDeExperimento "Killall siege" $?
   killall -s SIGINT tcpdump
-  echo "`date +%s` $tipoDeExperimento killall tcpdump" >> jarbas_local.log
+  logProcess $tipoDeExperimento "Killall tcpdump" $?
 }
 
 ##################################################################
