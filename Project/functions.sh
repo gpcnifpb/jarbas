@@ -293,7 +293,7 @@ function runAtacante() {
   ethtool -s eth0 speed 10 duplex full
   logProcess $numRodada $tipoDeExperimento "Ethtool eth0" $?
 
-  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP > /dev/null 2>&1 $ pid=$!
+  t50 192.168.0.200 --flood --turbo --dport 80 -S --protocol TCP > /dev/null 2>&1 & pid=$!
   checkPid $pid
   logProcess $numRodada $tipoDeExperimento "t50" $?
 
@@ -343,11 +343,11 @@ function runCliente() {
   sleep $durRodada
 
   killall -s SIGINT ping
-  logProcess $tipoDeExperimento "Killall ping" $?
+  logProcess $numRodada $tipoDeExperimento "Killall ping" $?
   killall -s SIGINT siege
-  logProcess $tipoDeExperimento "Killall siege" $?
+  logProcess $numRodada $tipoDeExperimento "Killall siege" $?
   killall -s SIGINT tcpdump
-  logProcess $tipoDeExperimento "Killall tcpdump" $?
+  logProcess $numRodada $tipoDeExperimento "Killall tcpdump" $?
 }
 
 ##################################################################
@@ -399,12 +399,12 @@ function logProcess() {
   nomeProcesso="$3"
   status="$4"
 
-  if [ $status -eq 0 ] ; then
+  if [ "$status" = "0" ] ; then
     echo "`date +%s` $tipoDeExperimento $numRodada $nomeProcesso SUCCESS" >> jarbas_local.log
   else
     echo "`date +%s` $tipoDeExperimento $numRodada $nomeProcesso ERROR" >> jarbas_local.log
-    printf "\tErro $nomeProcesso - Cliente\n"
-    printf "\tOs IPs sao:\n"
+    printf "\tErro $nomeProcesso\n"
+    printf "\tChecar nos IPs:\n"
     for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
       printf "\t$ip\n"
     done
