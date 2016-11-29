@@ -327,7 +327,7 @@ function runCliente() {
   c="1"
 
   ethtool -s eth1 speed 10 duplex full
-  if [$? -eq 0 ] ; then
+  if [ $? -eq 0 ] ; then
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 SUCCESS" >> jarbas_local.log
   else
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
@@ -339,7 +339,7 @@ function runCliente() {
   fi
 
   ethtool -s eth2 speed 10 duplex full
-  if [$? -eq 0 ] ; then
+  if [ $? -eq 0 ] ; then
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 SUCCESS" >> jarbas_local.log
   else
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 ERROR" >> jarbas_local.log
