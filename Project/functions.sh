@@ -169,16 +169,16 @@ function runAtacado() {
   collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
 
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada".log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada"._"$tipoDeExperimento"log &
   echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
 
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada".log
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
@@ -262,7 +262,7 @@ function runMonitorado() {
 
   sysbench --test=fileio --num-threads=32 --file-total-size=4G --file-test-mode=rndrw prepare
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/_"$time"_disk_"$numeroRodada"_"$tipoDeExperimento".log
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
@@ -322,11 +322,11 @@ function runCliente() {
   ethtool -s eth2 speed 10 duplex full
   logProcess $numRodada $tipoDeExperimento "Ethtool eth2" $?
 
-  tcpdump -i eth1 -U -w client_eth1_$numRodada.cap > /dev/null 2>$1 & pid=$!
+  tcpdump -i eth1 -U -w client_eth1_$numRodada_$tipoDeExperimento.cap > /dev/null 2>$1 & pid=$!
   checkPid $!
   logProcess $numRodada $tipoDeExperimento "Tcpdump eth1" $?
 
-  tcpdump -i eth2 -U -w client_eth2_$numRodada.cap > /dev/null 2>$1 & pid=$!
+  tcpdump -i eth2 -U -w client_eth2_$numRodada_$tipoDeExperimento.cap > /dev/null 2>$1 & pid=$!
   checkPid $!
   logProcess $numRodada $tipoDeExperimento "Tcpdump eth2" $?
 
