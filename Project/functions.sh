@@ -331,14 +331,18 @@ function runCliente() {
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 SUCCESS" >> jarbas_local.log
   else
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
-    printf "\n\tCliente X ERRO ethtool\n"
+    printf "\tErro ethtool - Cliente\n"
+    printf "\tOs IPs sao:\n"
+    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
+      printf "\t$ip\n"
+    done
   fi
 
   ethtool -s eth2 speed 10 duplex full
   if [$? -eq 0 ] ; then
     echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 SUCCESS" >> jarbas_local.log
   else
-    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
+    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 ERROR" >> jarbas_local.log
     printf "\tErro ethtool - Cliente\n"
     printf "\tOs IPs sao:\n"
     for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
@@ -352,11 +356,23 @@ function runCliente() {
   else
     echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth1 ERROR" >> jarbas_local.log
     printf "\tErro tcpdump - Cliente\n"
-    printf ""
+    printf "\tOs IPs sao:\n"
+    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
+      printf "\t$ip\n"
+    done
   fi
 
   tcpdump -i eth2 -U -w client_eth2_$numRodada.cap > /dev/null 2>$1 & pid=$!
-  echo "`date +%s` $tipoDeExperimento tcpdump eth2" >> jarbas_local.log
+  if ps -p $pid > /dev/null ; then
+    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth2 SUCCESS" >> jarbas_local.log
+  else
+    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth2 ERROR" >> jarbas_local.log
+    printf "\tErro tcpdump - Cliente\n"
+    printf "\tOs IPs sao:\n"
+    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
+      printf "\t$ip\n"
+    done
+  fi
 
   ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
   echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas_local.log
