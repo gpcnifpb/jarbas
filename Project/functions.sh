@@ -327,61 +327,28 @@ function runCliente() {
   c="1"
 
   ethtool -s eth1 speed 10 duplex full
-  if [ $? -eq 0 ] ; then
-    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 SUCCESS" >> jarbas_local.log
-  else
-    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth1 ERROR" >> jarbas_local.log
-    printf "\tErro ethtool - Cliente\n"
-    printf "\tOs IPs sao:\n"
-    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
-      printf "\t$ip\n"
-    done
-  fi
+  logProcess $numRodada $tipoDeExperimento "Ethtool eth1" $?
 
   ethtool -s eth2 speed 10 duplex full
-  if [ $? -eq 0 ] ; then
-    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 SUCCESS" >> jarbas_local.log
-  else
-    echo "`date +%s` $tipoDeExperimento $numRodada ethtool eth2 ERROR" >> jarbas_local.log
-    printf "\tErro ethtool - Cliente\n"
-    printf "\tOs IPs sao:\n"
-    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
-      printf "\t$ip\n"
-    done
-  fi
+  logProcess $numRodada $tipoDeExperimento "Ethtool eth2" $?
 
   tcpdump -i eth1 -U -w client_eth1_$numRodada.cap > /dev/null 2>$1 & pid=$!
-  if ps -p $pid > /dev/null ; then
-    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth1 SUCCESS" >> jarbas_local.log
-  else
-    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth1 ERROR" >> jarbas_local.log
-    printf "\tErro tcpdump - Cliente\n"
-    printf "\tOs IPs sao:\n"
-    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
-      printf "\t$ip\n"
-    done
-  fi
+  checkPid $!
+  logProcess $numRodada $tipoDeExperimento "Tcpdump eth1" $?
 
   tcpdump -i eth2 -U -w client_eth2_$numRodada.cap > /dev/null 2>$1 & pid=$!
-  if ps -p $pid > /dev/null ; then
-    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth2 SUCCESS" >> jarbas_local.log
-  else
-    echo "`date +%s` $tipoDeExperimento $numRodada tcpdump eth2 ERROR" >> jarbas_local.log
-    printf "\tErro tcpdump - Cliente\n"
-    printf "\tOs IPs sao:\n"
-    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
-      printf "\t$ip\n"
-    done
-  fi
+  checkPid $!
+  logProcess $numRodada $tipoDeExperimento "Tcpdump eth2" $?
 
   ping 192.168.0.200 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_01.log &
-  echo "`date +%s` $tipoDeExperimento ping 200" >> jarbas_local.log
+  logProcess $numRodada $tipoDeExperimento "Ping 192.168.0.200" $?
 
   ping 192.168.10.201 >> /gpcn/clientes/logs/ping/ping_"$numRodada"_"$tipoDeExperimento".srv_02.log &
-  echo "`date +%s` $tipoDeExperimento ping 201" >> jarbas_local.log
+  logProcess $numRodada $tipoDeExperimento "Ping 192.168.10.201" $?
 
-  siege -c 100 192.168.10.201 &
-  echo "`date +%s` $tipoDeExperimento siege 201" >> jarbas_local.log
+  siege -c 100 192.168.10.201 > /dev/null 2>$1 & pid=$!
+  checkPid $!
+  logProcess $numRodada $tipoDeExperimento "Siege" $?
 
   while [ $c -le $durRodada ]
   do
@@ -417,7 +384,44 @@ function checaInterface() {
 
 }
 ##############################################################
-#
-#
-#
+# Objetivo: Verificar se o pid está em execução
+# Argumentos
+#   $pid -> PID para checar se está em execução
 ##############################################################
+function checkPid() {
+  pid="$1"
+
+  # Se em execução returna 0, ou seja, sucesso.
+  if ps -p $pid > /dev/null ; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+##############################################################
+# Objetivo: Se status = 1 reporta e loga o erro, se status = 0, reporta e loga o sucesso
+# Argumentos
+#   $tipoDeExperimento -> Tipo do experimento para registro de log
+#   $numRodada -> Número da rodada para registro de log
+#   $nomeProcesso -> Nome do processo para registro de log
+#   $status -> Status do processo
+##############################################################
+function logProcess() {
+  numRodada="$1"
+  tipoDeExperimento="$2"
+  nomeProcesso="$3"
+  status="$4"
+
+  if [ $status -eq 0 ] ; then
+    echo "`date +%s` $tipoDeExperimento $numRodada $nomeProcesso SUCCESS" >> jarbas_local.log
+  else
+    echo "`date +%s` $tipoDeExperimento $numRodada $nomeProcesso ERROR" >> jarbas_local.log
+    printf "\tErro $nomeProcesso - Cliente\n"
+    printf "\tOs IPs sao:\n"
+    for ip in `ifconfig | grep -i inet\ | grep -v 127 | awk {'print $2'} | cut -d: -f2` ; do
+      printf "\t$ip\n"
+    done
+  fi
+
+}
