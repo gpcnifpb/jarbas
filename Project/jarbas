@@ -42,23 +42,66 @@ do
     machineType="$2"
     case $machineType  in
       atacado)
-      echo "Atacado"
+        echo "Configurando Atacado"
+
+        echo "Criando diretórios"
+        sudo mkdir -p /gpcn/atacado/logs/collectl/
+        sudo mkdir -p /gpcn/atacado/logs/netstat/
+        sudo mkdir -p /gpcn/atacado/scripts/
+
+        echo "Installing SSHPASS"
+        sudo apt-get -y install sshpass > /dev/null
+        sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+        sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+        sudo service ssh restart
+        sudo rm /home/vagrant/.ssh/known_hosts
+        echo "Status SSHPASS:"
+        sshpass -V
+
+        echo "Installing build essentials"
+        sudo apt-get -y update > /dev/null
+        sudo apt-get -y upgrade > /dev/null
+        sudo apt-get install -y build-essential > /dev/null
+
+        echo "Installing Apache"
+        sudo apt-get -y install apache2 > /dev/null
+        echo "Status Apache:"
+        apache2 -v
+
+        echo "Installing Collectl"
+        sudo apt-get -y install collectl > /dev/null
+        echo "Status Collectl:"
+        collectl --version
+
+        echo "Installing Netstat"
+        sudo apt-get -y install netstat-nat > /dev/null
+        echo "Status Netstat:"
+        netstat --version
+
+        echo "Installing Stress-NG"
+        sudo apt-get -y install stress-ng > /dev/null
+        echo "Status Stress-ng:"
+        stress-ng --version
+        exit 1
+        ;;
+      master)
+      echo "Configurando Master"
       break
       ;;
       atacante)
-      echo "Atacante"
+      echo "Configurando Atacante"
       break
       ;;
       cliente)
-      echo "Cliente"
+      echo "Configurando Cliente"
       break
       ;;
       figurantes)
-      echo "Figurantes"
+      echo "Configurando Figurantes"
       break
       ;;
       hypervisor)
-      echo "Hypervisor"
+      echo "Configurando Hypervisor"
       break
       ;;
       *)
