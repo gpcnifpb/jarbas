@@ -164,7 +164,7 @@ function runAtacado() {
   tcpdump -i eth0 -U -w atacado_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
 
-  #stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
   echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
   collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
@@ -250,7 +250,7 @@ function runMonitorado() {
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
   collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
-  #stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout 60s &
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
   sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada"_"$tipoDeExperimento".log &
