@@ -1,3 +1,2 @@
 # Colocar aqui todos os arquivos que devem ser ignorados pelo github na hora do commit
-Ambiente/.vagrant
-Ambiente/jarbas
+environment/.vagrant
