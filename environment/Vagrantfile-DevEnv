@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "jarbas" do |jarbas|
+  	jarbas.vm.box = "ubuntu/trusty64"
+    jarbas.vm.hostname = "jarbas"
+  	jarbas.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
+
+  	jarbas.vm.provider "virtualbox" do |vb|
+  		vb.name = "jarbas"
+      vb.memory = 256
+    end
+
+    jarbas.vm.provision "shell", inline: <<-SHELL
+
+      apt-get -y install build-essentials
+      apt-get -y install git
+
+    SHELL
+  end
+end
