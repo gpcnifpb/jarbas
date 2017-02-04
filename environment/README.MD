@@ -1,24 +1,31 @@
 # How to start the environment
 
-## Choose
-First of all, there are 2 types of environments. One is just to have a proper ShellScript environment to code.
-And the other one provides a full scenario to run tests (attacks and monitoring).
+## Understand the environment
 
-- DevEnv
-  - Uses only one VirtualMachine
-  - Just to makes use of Bash
+This is a multi-machine Vagrant environment, each has it's own purpose.
 
-- Full DevEnv
-  - Uses 5 VirtualMachines
-    - Master (J.A.R.B.A.S. script)
-    - Atacker
-    - Client
-    - Atacked
-    - Monitored
+- Master (J.A.R.B.A.S. script)
+  - Controls the others.
+- Attacker
+  - Flood the attacked
+- Client
+  - Try legitmate connections
+- Attacked
+  - The loud neighboor
+- Monitored
+  - The one to isolate
 
-## Rename and start
+## Start all or just one
 
-Now, rename the "Vagrantfile-<EnvType>" desired to just "Vagrantfile". And run the command:
+All of them
 ```Bash
 vagrant up
 ```
+
+One of them
+```Bash
+vagrant up Master
+vagrant halt Master
+```
+
+Watchout because this is case senstive so Master != master
