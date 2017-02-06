@@ -1,22 +1,22 @@
 #!/bin/bash
-if [ -d "/home/vagrant/jarbas/Project/" ] ; then
-  . /home/vagrant/jarbas/Project/functions.sh
+if [ -d "/home/vagrant/jarbas/bin/" ] ; then
+  . /home/vagrant/jarbas/bin/functions.sh
 fi
 
-if [ -d "/root/gpcn/xenserver/scripts/jarbas/Project/" ] ; then
-  . /root/gpcn/xenserver/scripts/jarbas/Project/functions.sh
+if [ -d "/root/gpcn/xenserver/scripts/jarbas/bin/" ] ; then
+  . /root/gpcn/xenserver/scripts/jarbas/bin/functions.sh
 fi
 
-if [ -d "/gpcn/atacado/scripts/jarbas/Project/" ] ; then
-  . /gpcn/atacado/scripts/jarbas/Project/functions.sh
+if [ -d "/gpcn/atacado/scripts/jarbas/bin/" ] ; then
+  . /gpcn/atacado/scripts/jarbas/bin/functions.sh
 fi
 
-if [ -d "/gpcn/monitorado/scripts/jarbas/Project/" ] ; then
-  . /gpcn/monitorado/scripts/jarbas/Project/functions.sh
+if [ -d "/gpcn/monitorado/scripts/jarbas/bin/" ] ; then
+  . /gpcn/monitorado/scripts/jarbas/bin/functions.sh
 fi
 
-if [ -d "/home/ubuntu/jarbas/Project/" ] ; then
-  . /home/ubuntu/jarbas/Project/functions.sh
+if [ -d "/home/ubuntu/jarbas/bin/" ] ; then
+  . /home/ubuntu/jarbas/bin/functions.sh
 fi
 
 
