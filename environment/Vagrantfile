@@ -50,9 +50,9 @@ Vagrant.configure("2") do |config|
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -104,9 +104,9 @@ Vagrant.configure("2") do |config|
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -164,16 +164,16 @@ Vagrant.configure("2") do |config|
     # echo "Criando diretórios"
     # sudo mkdir -p /gpcn/atacante/logs/
     # sudo mkdir -p /gpcn/atacante/scripts/
-  
+
     echo "Update and Build Essentials"
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y build-essential > /dev/null
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-    sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -234,9 +234,9 @@ Vagrant.configure("2") do |config|
   #   echo "Instalando J.A.R.B.A.S"
   #   sudo apt-get install -y git > /dev/null
   #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
+  #   sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+  #   sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
+  #   sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
   #
   #   echo "Installing SSHPASS"
   #   sudo apt-get -y install sshpass > /dev/null
@@ -312,9 +312,9 @@ Vagrant.configure("2") do |config|
   #   echo "Instalando J.A.R.B.A.S"
   #   sudo apt-get install -y git > /dev/null
   #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
+  #   sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+  #   sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
+  #   sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
   #
   #   echo "Installing build essentials"
   #   sudo apt-get -y update > /dev/null
