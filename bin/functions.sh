@@ -311,12 +311,10 @@ function runAtacante() {
 # Argumentos:
 #  $1 -> Numero de Rodadas
 #  $2 -> Tipo do experimento
-#  $3 -> Duração da rodada
 ##################################################################
 function runCliente() {
   numRodada="$1"
   tipoDeExperimento="$2"
-  durRodada="$3"
   time=`date +%s`
 
   ethtool -s eth1 speed 10 duplex full

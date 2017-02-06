@@ -3,9 +3,11 @@
 
 Vagrant.configure("2") do |config|
 
+# MASTER
   config.vm.define "Master" do |master|
     master.vm.box = "ubuntu/trusty64"
     master.vm.hostname = "master"
+    # NETWORK
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
@@ -13,7 +15,8 @@ Vagrant.configure("2") do |config|
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
-    inline: "ifconfig eth2 192.168.2.254 netmask 255.255.255.0 up"
+    inline: "ifconfig eth2 192.168.10.254 netmask 255.255.255.0 up"
+    # SHARED FOLDER
     master.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
 
     master.vm.provider "virtualbox" do |vb|
@@ -22,150 +25,184 @@ Vagrant.configure("2") do |config|
     end
 
     master.vm.provision "shell", inline: <<-SHELL
-    echo "Configurando master"
-    echo "Instalando atualizações"
+
+    echo "-------------------------------- SETTING UP MASTER --------------------------------"
+
+    # echo "Criando diretórios"
+    # sudo mkdir -p /home/vagrant/logs/monitorado/collectl/
+    # sudo mkdir -p /home/vagrant/logs/monitorado/netstat/
+    # sudo mkdir -p /home/vagrant/logs/monitorado/sysbench/
+    # sudo mkdir -p /home/vagrant/logs/atacado/collectl/
+    # sudo mkdir -p /home/vagrant/logs/atacado/netstat/
+    # sudo mkdir -p /home/vagrant/logs/clientes/
+    # sudo mkdir -p /home/vagrant/logs/hypervisor/
+    # sudo mkdir -p /home/vagrant/scripts/
+
+    # for i in `seq 1 6`
+    # do
+    #   sudo mkdir -p /home/vagrant/logs/clientes/0$i/ping/
+    #   sudo mkdir -p /home/vagrant/logs/clientes/0$i/siege/
+    # done
+
+    echo "Update and Build Essentials"
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y build-essential > /dev/null
     sudo apt-get install -y git > /dev/null
-    echo "Adicionando J.A.R.B.A.S."
+
+    echo "J.A.R.B.A.S."
     sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
     sudo chmod +x /home/vagrant/jarbas/Project/jarbas
     sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-    echo "Master configurado"
-    echo ""
+
+    echo "Installing SSHPASS"
+    sudo apt-get -y install sshpass > /dev/null
+    sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+    sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    sudo service ssh restart
+    sudo rm /home/vagrant/.ssh/known_hosts
+    echo "Status SSHPASS:"
+    sshpass -V
+
+    echo "-------------------------------- MASTER IS READY --------------------------------"
+
     SHELL
   end
 
-  # config.vm.define "gpcnmaster" do |gpcnmaster|
-  #   gpcnmaster.vm.box = "ubuntu/trusty64"
-  #   gpcnmaster.vm.hostname = "gpcnmaster"
-  #   #Adaptador em modo bridge
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth1 192.168.0.254 netmask 255.255.255.0 up"
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth2 192.168.10.254 netmask 255.255.255.0 up"
-  #
-  #   gpcnmaster.vm.synced_folder "./master/", "/gpcn/master/", create: true
-  #
-  #   gpcnmaster.vm.provider "virtualbox" do |vb|
-  #     vb.name = "gpcnmaster"
-  #     vb.memory = 256
-  #   end
-  #
-  #   gpcnmaster.vm.provision "shell", inline: <<-SHELL
-  #
-  #   echo "-------------------------------- CONFIGURACAO DO MASTER --------------------------------"
-  #
-  #   echo "Criando diretórios"
-  #   sudo mkdir -p /gpcn/master/logs/monitorado/collectl/
-  #   sudo mkdir -p /gpcn/master/logs/monitorado/netstat/
-  #   sudo mkdir -p /gpcn/master/logs/monitorado/sysbench/
-  #   sudo mkdir -p /gpcn/master/logs/atacado/collectl/
-  #   sudo mkdir -p /gpcn/master/logs/atacado/netstat/
-  #   sudo mkdir -p /gpcn/master/logs/clientes/
-  #   sudo mkdir -p /gpcn/master/logs/hypervisor/
-  #   sudo mkdir -p /gpcn/master/scripts/
-  #
-  #   for i in `seq 1 6`
-  #   do
-  #     sudo mkdir -p /gpcn/master/logs/clientes/0$i/ping/
-  #     sudo mkdir -p /gpcn/master/logs/clientes/0$i/siege/
-  #
-  #   done
-  #   echo "Instalando J.A.R.B.A.S"
-  #   sudo apt-get install -y git > /dev/null
-  #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-  #
-  #   echo "Installing build essentials"
-  #   sudo apt-get -y update > /dev/null
-  #   sudo apt-get -y upgrade > /dev/null
-  #   sudo apt-get install -y build-essential > /dev/null
-  #
-  #   echo "Installing SSHPASS"
-  #   sudo apt-get -y install sshpass > /dev/null
-  #   sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-  #   sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-  #   sudo service ssh restart
-  #   sudo rm /home/vagrant/.ssh/known_hosts
-  #   echo "Status SSHPASS:"
-  #   sshpass -V
-  #
-  #   SHELL
-  # end
-  #
-  # config.vm.define "gpcnclient" do |gpcnclient|
-  #   gpcnclient.vm.box = "ubuntu/trusty64"
-  #   gpcnclient.vm.hostname = "gpcnclient"
-  #   #Adaptador em modo
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth1 192.168.0.1 netmask 255.255.255.0 up"
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth2 192.168.10.1 netmask 255.255.255.0 up"
-  #   gpcnclient.vm.synced_folder "./client/", "/gpcn/clientes/", create: true
-  #
-  #   gpcnclient.vm.provider "virtualbox" do |vb|
-  #     vb.name = "gpcnclient"
-  #     vb.memory = 256
-  #   end
-  #
-  #   gpcnclient.vm.provision "shell", inline: <<-SHELL
-  #
-  #   echo "-------------------------------- CONFIGURACAO DO CLIENT --------------------------------"
-  #
-  #   echo "Criando diretórios"
-  #   sudo mkdir -p /gpcn/clientes/logs/ping/
-  #   sudo mkdir -p /gpcn/clientes/logs/siege/
-  #   sudo mkdir -p /gpcn/clientes/scripts
-  #
-  #   echo "Instalando J.A.R.B.A.S"
-  #   sudo apt-get install -y git > /dev/null
-  #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-  #
-  #   echo "Installing SSHPASS"
-  #   sudo apt-get -y install sshpass > /dev/null
-  #   sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-  #   sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-  #   sudo service ssh restart
-  #   sudo rm /home/vagrant/.ssh/known_hosts
-  #   echo "Status SSHPASS:"
-  #   sshpass -V
-  #
-  #   echo "Installing build essentials"
-  #   sudo apt-get -y update > /dev/null
-  #   sudo apt-get -y upgrade > /dev/null
-  #   sudo apt-get install -y build-essential > /dev/null
-  #
-  #   echo "Installing EthTool"
-  #   sudo apt-get -y install ethtool > /dev/null
-  #   echo "Status EthTool: "
-  #   ethtool --version
-  #
-  #   echo "Installing TCP Dump"
-  #   sudo apt-get -y install tcpdump > /dev/null
-  #   echo "Status TCPDump: "
-  #   tcpdump --version
-  #
-  #   echo "Installing Siege"
-  #   sudo apt-get -y install siege > /dev/null
-  #   echo "Status Siege: "
-  #   siege --version
-  #
-  #   SHELL
-  # end
+# CLIENT
+  config.vm.define "Client" do |client|
+    client.vm.box = "ubuntu/trusty64"
+    client.vm.hostname = "client"
+    #NETWORK
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    inline: "ifconfig eth1 192.168.1.1 netmask 255.255.255.0 up"
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    inline: "ifconfig eth2 192.168.10.1 netmask 255.255.255.0 up"
+    # SHARED FOLDER
+    client.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
+
+    client.vm.provider "virtualbox" do |vb|
+      vb.name = "client"
+      vb.memory = 256
+    end
+
+    client.vm.provision "shell", inline: <<-SHELL
+
+    echo "-------------------------------- SETTING UP CLIENT --------------------------------"
+
+    # echo "Criando diretórios"
+    # sudo mkdir -p /home/vagrant/client/log/ping/
+    # sudo mkdir -p /home/vagrant/client/log/siege/
+    # sudo mkdir -p /home/vagrant/client/scripts
+
+    echo "Update and Build Essentials"
+    sudo apt-get -y update > /dev/null
+    sudo apt-get install -y build-essential > /dev/null
+    sudo apt-get install -y git > /dev/null
+
+    echo "J.A.R.B.A.S."
+    sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+    sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
+
+    echo "Installing SSHPASS"
+    sudo apt-get -y install sshpass > /dev/null
+    sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+    sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    sudo service ssh restart
+    sudo rm /home/vagrant/.ssh/known_hosts
+    echo "Status SSHPASS:"
+    sshpass -V
+
+    echo "Installing EthTool"
+    sudo apt-get -y install ethtool > /dev/null
+    echo "Status EthTool: "
+    ethtool --version
+
+    echo "Installing TCP Dump"
+    sudo apt-get -y install tcpdump > /dev/null
+    echo "Status TCPDump: "
+    tcpdump --version
+
+    echo "Installing Siege"
+    sudo apt-get -y install siege > /dev/null
+    echo "Status Siege: "
+    siege --version
+
+    echo "-------------------------------- CLIENT IS READY --------------------------------"
+
+    SHELL
+  end
+# ATTACKER
+  config.vm.define "Attacker" do |attacker|
+    attacker.vm.box = "ubuntu/trusty64"
+    attacker.vm.hostname = "attacker"
+    # NETWORK
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    inline: "ifconfig eth1 192.168.0.7 netmask 255.255.255.0 up"
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    # SHARED FOLDER
+    inline: "ifconfig eth2 192.168.10.7 netmask 255.255.255.0 up"
+    attacker.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
+
+    attacker.vm.provider "virtualbox" do |vb|
+      vb.name = "attacker"
+      vb.memory = 256
+    end
+
+    attacker.vm.provision "shell", inline: <<-SHELL
+
+    echo "-------------------------------- SETTING UP ATTACKER --------------------------------"
+
+    # echo "Criando diretórios"
+    # sudo mkdir -p /gpcn/atacante/logs/
+    # sudo mkdir -p /gpcn/atacante/scripts/
+  
+    echo "Update and Build Essentials"
+    sudo apt-get -y update > /dev/null
+    sudo apt-get install -y build-essential > /dev/null
+    sudo apt-get install -y git > /dev/null
+
+    echo "J.A.R.B.A.S."
+    sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/Project/jarbas
+    sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
+
+    echo "Installing SSHPASS"
+    sudo apt-get -y install sshpass > /dev/null
+    sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+    sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    sudo service ssh restart
+    sudo rm /home/vagrant/.ssh/known_hosts
+    echo "Status SSHPASS:"
+    sshpass -V
+
+    echo "Installing EthTool"
+    sudo apt-get -y install ethtool > /dev/null
+    echo "Status EthTool: "
+    ethtool --version
+
+    echo "Installing T50"
+    wget --quiet "http://downloads.sourceforge.net/project/t50/t50-5.6/t50-5.6.6.tar.gz"
+    tar -xvzf t50-5.6.6.tar.gz > /dev/null
+    cd t50-5.6.6
+    sudo ./configure > /dev/null
+    sudo make > /dev/null
+    sudo make install > /dev/null
+    echo "Status T50: "
+    t50 --version
+
+    echo "-------------------------------- ATTACKER IS READY --------------------------------"
+
+    SHELL
+  end
   #
   # config.vm.define "gpcnmonitorado" do |gpcnmonitorado|
   #   gpcnmonitorado.vm.box = "ubuntu/trusty64"
@@ -308,70 +345,4 @@ Vagrant.configure("2") do |config|
   #   SHELL
   # end
   #
-  # config.vm.define "gpcnslave" do |gpcnslave|
-  #   gpcnslave.vm.box = "ubuntu/trusty64"
-  #   gpcnslave.vm.hostname = "gpcnslave"
-  #   #Adaptador em modo
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth1 192.168.0.7 netmask 255.255.255.0 up"
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth2 192.168.10.7 netmask 255.255.255.0 up"
-  #   gpcnslave.vm.synced_folder "./slave/", "/gpcn/atacante/", create: true
-  #
-  #   gpcnslave.vm.provider "virtualbox" do |vb|
-  #     vb.name = "gpcnslave"
-  #     vb.memory = 256
-  #   end
-  #
-  #   gpcnslave.vm.provision "shell", inline: <<-SHELL
-  #
-  #   echo "-------------------------------- CONFIGURACAO DO SLAVE --------------------------------"
-  #
-  #   echo "Criando diretórios"
-  #   sudo mkdir -p /gpcn/atacante/logs/
-  #   sudo mkdir -p /gpcn/atacante/scripts/
-  #
-  #
-  #   echo "Installing SSHPASS"
-  #   sudo apt-get -y install sshpass > /dev/null
-  #   sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-  #   sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-  #   sudo service ssh restart
-  #   sudo rm /home/vagrant/.ssh/known_hosts
-  #   echo "Status SSHPASS:"
-  #   sshpass -V
-  #
-  #   echo "Instalando J.A.R.B.A.S"
-  #   sudo apt-get install -y git > /dev/null
-  #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/Project/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/Project/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/Project/jarbas /usr/bin/jarbas
-  #
-  #   echo "Installing build essentials"
-  #   sudo apt-get -y update > /dev/null
-  #   sudo apt-get -y upgrade > /dev/null
-  #   sudo apt-get install -y build-essential > /dev/null
-  #
-  #   echo "Installing EthTool"
-  #   sudo apt-get -y install ethtool > /dev/null
-  #   echo "Status EthTool: "
-  #   ethtool --version
-  #
-  #   echo "Installing T50"
-  #   wget --quiet "http://downloads.sourceforge.net/project/t50/t50-5.6/t50-5.6.6.tar.gz"
-  #   tar -xvzf t50-5.6.6.tar.gz > /dev/null
-  #   cd t50-5.6.6
-  #   sudo ./configure > /dev/null
-  #   sudo make > /dev/null
-  #   sudo make install > /dev/null
-  #   echo "Status T50: "
-  #   t50 --version
-  #
-  #   SHELL
-  # end
 end
