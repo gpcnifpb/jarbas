@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -d "/home/vagrant/jarbas/bin/" ] ; then
+if [ -d ~/"jarbas/bin/" ] ; then
   . /home/vagrant/jarbas/bin/functions.sh
 fi
 
@@ -18,7 +18,6 @@ fi
 if [ -d "/home/ubuntu/jarbas/bin/" ] ; then
   . /home/ubuntu/jarbas/bin/functions.sh
 fi
-
 
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
