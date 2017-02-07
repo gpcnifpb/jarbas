@@ -13,7 +13,7 @@ function run() {
     printf "\n\tExecutando experimento com $1 rodada.\n\n"
   fi
   numRodadas="$1"
-  durRodada="180" # Duração em segundos
+  durRodada="60" # Duração em segundos
 
   for r in `seq 1 $numRodadas`
   do
