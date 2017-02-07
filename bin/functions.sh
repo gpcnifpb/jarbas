@@ -160,23 +160,23 @@ function runAtacado() {
   tcpdump -i eth0 -U -w atacado_$numRodada.cap &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
 
-  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s > /dev/null 2>$1  &
   echo "`date +%s` $tipoDeExperimento stress ng" >> jarbas_local.log
-  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" &
+  collectl -sscmn -P -f /gpcn/atacado/logs/collectl/"$time"_"$tipoDeExperimento"_"$numRodada" > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
 
-  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada"._"$tipoDeExperimento"log &
+  sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/atacado/logs/sysbench/"$time"_cpu_"$numRodada"._"$tipoDeExperimento"log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento sysbench cpu" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada"_"$tipoDeExperimento".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=read run >> /gpcn/atacado/logs/sysbench/"$time"_memr_"$numRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
-  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada"_"$tipoDeExperimento".log &
+  sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/atacado/logs/sysbench/"$time"_memw_"$numRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento sysbench memory" >> jarbas_local.log
 
-  sysbench --test=fileio --num-threads=32 --file-total-size=2G --max-time=60 --file-test-mode=rndrw prepare
+  sysbench --test=fileio --num-threads=32 --file-total-size=2G --max-time=60 --file-test-mode=rndrw prepare > /dev/null 2>$1
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --max-time=60 --file-test-mode=rndrw run >> /gpcn/atacado/logs/sysbench/"$time"_disk_"$numRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup > /dev/null 2>$1
   echo "`date +%s` $tipoDeExperimento sysbench fileio" >> jarbas_local.log
 
   c="1"
@@ -205,13 +205,13 @@ function runXenServer() {
   durRodada="$3"
   time=`date +%s`
   # TODO mudar diretórios das interfaces vif
-  tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  tcpdump -i eth1 -s 0 -U >> /root/gpcn/xenserver/log/eth1/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento tcpdump eth1" >> jarbas_local.log
-  tcpdump -i vif6.0 -s 0 -U >> /root/gpcn/xenserver/log/vif6/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  tcpdump -i vif6.0 -s 0 -U >> /root/gpcn/xenserver/log/vif6/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento tcpdump vif6.0" >> jarbas_local.log
-  tcpdump -i vif7.0 -s 0 -U >> /root/gpcn/xenserver/log/vif7/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  tcpdump -i vif7.0 -s 0 -U >> /root/gpcn/xenserver/log/vif7/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento tcpdump vif7.0" >> jarbas_local.log
-  vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log
+  vmstat -n 1 >> /root/gpcn/xenserver/log/vmstat/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log > /dev/null 2>$1
   echo "`date +%s` $tipoDeExperimento vmstat" >> jarbas_local.log
 
   c="1"
@@ -242,11 +242,11 @@ function runMonitorado() {
   COUNT=0
   time=`date +%s`
 
-  tcpdump -i eth1 -U -w monitorado_$numRodada.cap &
+  tcpdump -i eth1 -U -w monitorado_$numRodada.cap > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento tcpdump" >> jarbas_local.log
-  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log &
+  collectl -sscmn -P -f /gpcn/monitorado/logs/collectl/"$time"_rodada_"$numeroRodada"_"$tipoDeExperimento".log > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento collectl" >> jarbas_local.log
-  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s &
+  stress-ng --cpu 2 --io 2 --vm 4 --vm-bytes 1G --timeout "$durRodada"s > /dev/null 2>$1 &
   echo "`date +%s` $tipoDeExperimento stress" >> jarbas_local.log
 
   sysbench --test=cpu --cpu-max-prime=200000 --max-time=120s --num-threads=4 run >> /gpcn/monitorado/logs/sysbench/"$time"_cpu_"$numeroRodada"_"$tipoDeExperimento".log &
@@ -256,11 +256,11 @@ function runMonitorado() {
   sysbench --test=memory --memory-block-size=1K --memory-total-size=50G --memory-oper=write run >> /gpcn/monitorado/logs/sysbench/"$time"_memw_"$numeroRodada"_"$tipoDeExperimento".log &
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
-  sysbench --test=fileio --num-threads=32 --file-total-size=2G --max-time=60 --file-test-mode=rndrw prepare
+  sysbench --test=fileio --num-threads=32 --file-total-size=2G --max-time=60 --file-test-mode=rndrw prepare > /dev/null 2>$1
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
   sysbench --test=fileio --num-threads=16 --file-total-size=2G --max-time=60 --file-test-mode=rndrw run >> /gpcn/monitorado/logs/sysbench/"$time"_disk_"$numeroRodada"_"$tipoDeExperimento".log
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
-  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup
+  sysbench --test=fileio --num-threads=16 --file-total-size=2G --file-test-mode=rndrw cleanup > /dev/null 2>$1
   echo "`date +%s` $tipoDeExperimento sysbench" >> jarbas_local.log
 
   c="1"
@@ -315,10 +315,10 @@ function runCliente() {
   durRodada="$3"
   time=`date +%s`
 
-  ethtool -s eth1 speed 10 duplex full
+  ethtool -s eth1 speed 10 duplex full > /dev/null 2>$1
   logProcess $numRodada $tipoDeExperimento "Ethtool eth1" $?
 
-  ethtool -s eth2 speed 10 duplex full
+  ethtool -s eth2 speed 10 duplex full > /dev/null 2>$1
   logProcess $numRodada $tipoDeExperimento "Ethtool eth2" $?
 
   tcpdump -i eth1 -U -w client_eth1_$numRodada_$tipoDeExperimento.cap > /dev/null 2>$1 & pid=$!
