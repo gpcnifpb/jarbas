@@ -116,17 +116,14 @@ function runRodada() {
 
    printf "\tIniciando atacado...\n"
    sshpass -p 'vagrant' ssh root@192.168.0.200 'bash /gpcn/atacado/scripts/jarbas/Project/jarbas run atacado '$numRodada  $tipoDeExperimento $durRodada &
-  jarbas run atacado $numRodada  $tipoDeExperimento $durRodada &
 
    printf "\tIniciando monitorado...\n"
    sshpass -p 'vagrant' ssh root@192.168.10.201 'bash /gpcn/monitorado/scripts/jarbas/Project/jarbas run monitorado' $numRodada  $tipoDeExperimento $durRodada &
-  jarbas run monitorado $numRodada  $tipoDeExperimento $durRodada &
 
   for c in `seq 1 6`
   do
    printf "\tIniciando cliente $c...\n"
     sshpass -p 'vagrant' ssh root@192.168.1.$c 'bash jarbas run cliente ' $numRodada  $tipoDeExperimento $durRodada &
-    jarbas run cliente $numRodada  $tipoDeExperimento $durRodada &
   done
 
   if [ "$tipoDeExperimento" == "ComAtaque" ]; then
@@ -134,7 +131,6 @@ function runRodada() {
     do
      printf "\tIniciando atacante $a...\n"
       sshpass -p 'vagrant' ssh root@192.168.0.$a 'bash /home/vagrant/jarbas/Project/jarbas run atacante ' $numRodada $tipoDeExperimento $durRodada &
-      jarbas run atacante $numRodada $durRodada $tipoDeExperimento &
     done
   fi
 
