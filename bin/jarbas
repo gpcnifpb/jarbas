@@ -21,89 +21,238 @@ fi
 
 # Se DER ERRO USAR O dos2unix: dos2unix -k -o "nome do arquivo"
 
-# Declaração de constantes
-numRodadas="30"
+### COLORS
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+LIME_YELLOW=$(tput setaf 190)
+POWDER_BLUE=$(tput setaf 153)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+BRIGHT=$(tput bold)
+NORMAL=$(tput sgr0)
+BLINK=$(tput blink)
+REVERSE=$(tput smso)
+UNDERLINE=$(tput smul)
+### Example: echo -e "${RED}red text ${GREEN}green text${RS}"
 
+### CONSTANT VARIABLES
+NUM_RODADAS="30"
+
+### JARBAS WITHOUT ARGS WILL SHOW ARG MENU
 if [ -z $1 ]
 then
-  echo "FAZER AQUI MENU DE ARGS"
-  echo "Versão: 0.1"
+  echo -e "FAZER AQUI MENU DE ARGS"
+  echo -e "Versão: 0.1"
   exit 1 ;
 fi
 
+### ARGS READING
 while [[ $# > 0 ]]
 do
   key="$1"
 
   case $key in
-    --configure)
-    machineType="$2"
-    case $machineType  in
-      atacado)
-        echo "Configurando Atacado"
 
-        echo "Criando diretórios"
-        sudo mkdir -p /gpcn/atacado/logs/collectl/
-        sudo mkdir -p /gpcn/atacado/logs/netstat/
-        sudo mkdir -p /gpcn/atacado/scripts/
+    ### Make me will configure machine with selected programs
+    --makeme)
+      machineType="$2"
+      case $machineType  in
 
-        echo "Installing SSHPASS"
-        sudo apt-get -y install sshpass > /dev/null
-        sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-        sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-        sudo service ssh restart
-        sudo rm /home/vagrant/.ssh/known_hosts
-        echo "Status SSHPASS:"
-        sshpass -V
+        attacked)
+          echo -e "${BLUE} ### Configuring Attacked Machine ###"
 
-        echo "Installing build essentials"
-        sudo apt-get -y update > /dev/null
-        sudo apt-get -y upgrade > /dev/null
-        sudo apt-get install -y build-essential > /dev/null
+          echo -e "${BLUE} ## Creating Log Directories ##"
+          mkdir -p ~/jarbas/attacked/logs/collectl/
+          mkdir -p ~/jarbas/attacked/logs/netstat/
 
-        echo "Installing Apache"
-        sudo apt-get -y install apache2 > /dev/null
-        echo "Status Apache:"
-        apache2 -v
+          echo -e "${BLUE} ## Installing Build Essentials ##"
+          apt-get -y update > /dev/null
+          apt-get -y upgrade > /dev/null
+          apt-get install -y build-essential > /dev/null
 
-        echo "Installing Collectl"
-        sudo apt-get -y install collectl > /dev/null
-        echo "Status Collectl:"
-        collectl --version
+          echo -e "${BLUE} ## Installing Git  ##"
+          apt-get install -y git > /dev/null
+          echo -e "${GREEN} Status Git:"
+          git --version
 
-        echo "Installing Netstat"
-        sudo apt-get -y install netstat-nat > /dev/null
-        echo "Status Netstat:"
-        netstat --version
+          echo -e "${BLUE} ## Configuring Jarbas  ##"
+          ln -s jarbas /usr/bin/jarbas
+          chmod +x functions.sh
 
-        echo "Installing Stress-NG"
-        sudo apt-get -y install stress-ng > /dev/null
-        echo "Status Stress-ng:"
-        stress-ng --version
-        exit 1
-        ;;
-      master)
-      echo "Configurando Master"
-      break
-      ;;
-      atacante)
-      echo "Configurando Atacante"
-      break
-      ;;
-      cliente)
-      echo "Configurando Cliente"
-      break
-      ;;
-      figurantes)
-      echo "Configurando Figurantes"
-      break
-      ;;
-      hypervisor)
-      echo "Configurando Hypervisor"
-      break
-      ;;
-      *)
-      echo "J.A.R.B.A.S LOG: Não digitou nenhum tipo da máquina." ; exit 1
+          echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install sshpass > /dev/null
+          sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+          echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+          service ssh restart
+          rm /home/vagrant/.ssh/known_hosts
+
+          echo -e "${GREEN} Status SSHPASS:"
+          sshpass -V
+
+          echo -e "${BLUE} ## Installing Apache ##"
+          apt-get -y install apache2 > /dev/null
+          echo -e "${GREEN} Status Apache:"
+          apache2 -v
+
+          echo -e "${BLUE} ## Installing Collectl ##"
+          apt-get -y install collectl > /dev/null
+          echo -e "${GREEN} Status Collectl:"
+          collectl --version
+
+          echo -e "${BLUE} ## Installing Netstat ##"
+          apt-get -y install netstat-nat > /dev/null
+          echo -e "${GREEN} Status Netstat:"
+          netstat --version
+
+          echo -e "${BLUE} ## Installing Stress-NG ##"
+          apt-get -y install stress-ng > /dev/null
+          echo -e "${GREEN} Status Stress-ng:"
+          stress-ng --version
+
+          exit 1
+          ;;
+
+        master)
+          echo -e "${BLUE} ### Configuring Master Machine ###"
+
+          echo -e "${BLUE} ## Creating Log Directories ##"
+          mkdir -p ~/jarbas/master/logs/
+
+          echo -e "${BLUE} ## Installing Build Essentials ##"
+          apt-get -y update > /dev/null
+          apt-get -y upgrade > /dev/null
+          apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Installing Git  ##"
+          apt-get install -y git > /dev/null
+          echo -e "${GREEN} Status Git:"
+          git --version
+
+          echo -e "${BLUE} ## Configuring Jarbas  ##"
+          ln -s jarbas /usr/bin/jarbas
+          chmod +x functions.sh
+
+          echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install sshpass > /dev/null
+          sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+          echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+          service ssh restart
+          rm /home/vagrant/.ssh/known_hosts
+
+          echo -e "${GREEN} Status SSHPASS:"
+          sshpass -Vs
+
+          exit 1
+          ;;
+
+        attacker)
+          echo -e "${BLUE} ### Configuring Attacker Machine ###"
+
+          echo -e "${BLUE} ## Creating Log Directories ##"
+          mkdir -p ~/jarbas/attacker/logs/
+
+          echo -e "${BLUE} ## Installing Build Essentials ##"
+          apt-get -y update > /dev/null
+          apt-get -y upgrade > /dev/null
+          apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Installing Git  ##"
+          apt-get install -y git > /dev/null
+          echo -e "${GREEN} Status Git:"
+          git --version
+
+          echo -e "${BLUE} ## Configuring Jarbas  ##"
+          ln -s jarbas /usr/bin/jarbas
+          chmod +x functions.sh
+
+          echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install sshpass > /dev/null
+          sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+          echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+          service ssh restart
+          rm /home/vagrant/.ssh/known_hosts
+
+          echo -e "${GREEN} Status SSHPASS:"
+          sshpass -Vs
+
+          echo -e "${BLUE} ## Installing EthTool ##"
+          sudo apt-get -y install ethtool > /dev/null
+          echo -e "${GREEN} Status EthTool: "
+          ethtool --version
+
+          echo -e "${BLUE} ## Installing T50 ##"
+          wget --quiet "http://downloads.sourceforge.net/project/t50/t50-5.6/t50-5.6.6.tar.gz"
+          tar -xvzf t50-5.6.6.tar.gz > /dev/null
+          cd t50-5.6.6
+          sudo ./configure > /dev/null
+          sudo make > /dev/null
+          sudo make install > /dev/null
+          echo -e "${GREEN} Status T50: "
+          t50 --version
+
+          exit 1
+          ;;
+
+        client)
+          echo -e "${BLUE} ### Configuring Client Machine ###"
+
+          echo -e "${BLUE} ## Creating Log Directories ##"
+          mkdir -p ~/jarbas/client/logs/
+
+          echo -e "${BLUE} ## Installing Build Essentials ##"
+          apt-get -y update > /dev/null
+          apt-get -y upgrade > /dev/null
+          apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Installing Git  ##"
+          apt-get install -y git > /dev/null
+          echo -e "${GREEN} Status Git:"
+          git --version
+
+          echo -e "${BLUE} ## Configuring Jarbas  ##"
+          ln -s jarbas /usr/bin/jarbas
+          chmod +x functions.sh
+
+          echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install sshpass > /dev/null
+          sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+          echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+          service ssh restart
+          rm /home/vagrant/.ssh/known_hosts
+
+          echo -e "${GREEN} Status SSHPASS:"
+          sshpass -Vs
+
+          echo -e "${BLUE} ## Installing EthTool ##"
+          sudo apt-get -y install ethtool > /dev/null
+          echo -e "${GREEN} Status EthTool: "
+          ethtool --version
+
+          echo -e "${BLUE} ## Installing TCP Dump ##"
+          sudo apt-get -y install tcpdump > /dev/null
+          echo -e "${GREEN} Status TCPDump: "
+          tcpdump --version
+
+          echo -e "${BLUE} ## Installing Siege ##"
+          sudo apt-get -y install siege > /dev/null
+          echo -e "${GREEN} Status Siege: "
+          siege --version
+
+          exit 1
+          ;;
+
+        monitored)
+          echo -e "Configurando Hypervisor"
+
+          exit 1
+          ;;
+
+        *)
+          echo -e "${RED} J.A.R.B.A.S LOG: Machine type not found." ; exit 1
     esac
     shift
     ;;
@@ -111,21 +260,21 @@ do
     run)
     if [ -z "$2" ]
     then
-      echo "Executar o run com valores padrão."
-      run $numRodadas
+      echo -e "Executar o run com valores padrão."
+      run $NUM_RODADAS
       exit 1;
     fi
 
     args="$2"
     case $args in
       -r| --rodadas)
-      numRodadas="$3" #mover para dentro do else
+      NUM_RODADAS="$3" #mover para dentro do else
 
-      if [ -z "$numRodadas" ]
+      if [ -z "$NUM_RODADAS" ]
       then
-        echo "J.A.R.B.A.S LOG: Argumento VAZIO depois de --rodadas (-r)" ; exit 1
+        echo -e "J.A.R.B.A.S LOG: Argumento VAZIO depois de --rodadas (-r)" ; exit 1
       else
-        run $numRodadas
+        run $NUM_RODADAS
       fi
 
       ;;
@@ -135,7 +284,7 @@ do
 
       if [ -z "$checkArgs" ]
       then
-        echo "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
+        echo -e "J.A.R.B.A.S LOG: Argumento VAZIO depois do comando check" ; exit 1
       else
 
         case $checkArgs in
@@ -153,7 +302,7 @@ do
           #					    numClients="10"
           #					    numSlaves="6"
           #					  else
-          #						echo "PRECISA IMPLEMENTAR"
+          #						echo -e "PRECISA IMPLEMENTAR"
           #						case $pingArgs in
           #							-nc| --num-clients)
           #								numClients="$5"
@@ -178,14 +327,14 @@ do
           #		shift
           #		;;
           #	*)
-          #		echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1
+          #		echo -e "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando --ping (-p)" ; exit 1
           #esac
 
           #fi
 
           ;;
           *)
-          echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1
+          echo -e "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando check" ; exit 1
         esac
         shift
       fi
@@ -193,59 +342,59 @@ do
       ;;
 
       atacado)
-      # echo "Me execute como atacado"
-      numRodadas="$3"
+      # echo -e "Me execute como atacado"
+      NUM_RODADAS="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
 
-      runAtacado $numRodadas $tipoDeExperimento $durRodada
+      runAtacado $NUM_RODADAS $tipoDeExperimento $durRodada
       ;;
 
       monitorado)
-      # echo "Me execute como monitorado"
-      numRodadas="$3"
+      # echo -e "Me execute como monitorado"
+      NUM_RODADAS="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
 
-      runMonitorado $numRodadas $tipoDeExperimento $durRodada
+      runMonitorado $NUM_RODADAS $tipoDeExperimento $durRodada
       ;;
 
       cliente)
-      # echo "Me execute como cliente"
-      numRodadas="$3"
+      # echo -e "Me execute como cliente"
+      NUM_RODADAS="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
 
-      runCliente $numRodadas $tipoDeExperimento $durRodada
+      runCliente $NUM_RODADAS $tipoDeExperimento $durRodada
       ;;
 
       atacante)
-      # echo "Me execute como atacante"
-      numRodadas="$3"
+      # echo -e "Me execute como atacante"
+      NUM_RODADAS="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
 
-      runAtacante $numRodadas $tipoDeExperimento $durRodada
+      runAtacante $NUM_RODADAS $tipoDeExperimento $durRodada
       ;;
 
       xenserver)
-      # echo "Me execute como atacado"
-      numRodadas="$3"
+      # echo -e "Me execute como atacado"
+      NUM_RODADAS="$3"
       tipoDeExperimento="$4"
       durRodada="$5"
 
-      runXenServer $numRodadas $tipoDeExperimento $durRodada
+      runXenServer $NUM_RODADAS $tipoDeExperimento $durRodada
       ;;
 
       *)
-      echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
+      echo -e "J.A.R.B.A.S LOG: Argumento INVÁLIDO depois do comando run" ; exit 1
     esac
     #shift
     break
     ;;
 
     *)
-    echo "J.A.R.B.A.S LOG: Argumento INVÁLIDO" ; exit 1
+    echo -e "J.A.R.B.A.S LOG: Argumento INVÁLIDO" ; exit 1
     ;;
   esac
   shift
