@@ -7,19 +7,17 @@ Vagrant.configure("2") do |config|
   config.vm.define "Master" do |master|
     master.vm.box = "ubuntu/trusty64"
     master.vm.hostname = "master"
-
     # NETWORK
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
-    inline: "ifconfig eth1 192.168.0.254 netmask 255.255.255.0 up"
+    inline: "ifconfig eth1 192.168.1.254 netmask 255.255.255.0 up"
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
     inline: "ifconfig eth2 192.168.10.254 netmask 255.255.255.0 up"
-
     # SHARED FOLDER
-    master.vm.synced_folder "../../jarbas", "/jarbas/", create: true
+    master.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
 
     master.vm.provider "virtualbox" do |vb|
       vb.name = "master"
@@ -30,17 +28,30 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------------------- SETTING UP MASTER --------------------------------"
 
+    echo "Criando diretórios"
+    sudo mkdir -p /home/vagrant/log/attacker/
+    sudo mkdir -p /home/vagrant/log/client/
+    sudo mkdir -p /home/vagrant/log/monitored/
+    sudo mkdir -p /home/vagrant/log/attacked/
+    sudo mkdir -p /home/vagrant/log/hypervisor/
+
+    # for i in `seq 1 6`
+    # do
+    #   sudo mkdir -p /home/vagrant/logs/clientes/0$i/ping/
+    #   sudo mkdir -p /home/vagrant/logs/clientes/0$i/siege/
+    # done
+
     echo "Update and Build Essentials"
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y build-essential > /dev/null
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    cd /
-    sudo git clone "https://github.com/gpcnifpb/jarbas.git"
-    sudo ln -s /jarbas/bin/jarbas /usr/bin/jarbas
-    sudo chmod +x /jarbas/bin/jarbas
-    sudo chmod +x /jarbas/bin/functions.sh
+    sudo apt-get install -y git > /dev/null
+    git clone https://github.com/gpcnifpb/jarbas.git
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -48,7 +59,6 @@ Vagrant.configure("2") do |config|
     sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
     sudo service ssh restart
     sudo rm /home/vagrant/.ssh/known_hosts
-
     echo "Status SSHPASS:"
     sshpass -V
 
@@ -61,19 +71,17 @@ Vagrant.configure("2") do |config|
   config.vm.define "Client" do |client|
     client.vm.box = "ubuntu/trusty64"
     client.vm.hostname = "client"
-
     #NETWORK
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
-    inline: "ifconfig eth1 192.168.0.1 netmask 255.255.255.0 up"
+    inline: "ifconfig eth1 192.168.1.1 netmask 255.255.255.0 up"
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
     inline: "ifconfig eth2 192.168.10.1 netmask 255.255.255.0 up"
-
     # SHARED FOLDER
-    client.vm.synced_folder "../../jarbas", "/jarbas/", create: true
+    client.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
 
     client.vm.provider "virtualbox" do |vb|
       vb.name = "client"
@@ -84,17 +92,20 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------------------- SETTING UP CLIENT --------------------------------"
 
+    echo "Criando diretórios"
+    sudo mkdir -p /home/vagrant/log/client
+
     echo "Update and Build Essentials"
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y build-essential > /dev/null
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    cd /
-    sudo git clone "https://github.com/gpcnifpb/jarbas.git"
-    sudo ln -s /jarbas/bin/jarbas /usr/bin/jarbas
-    sudo chmod +x /jarbas/bin/jarbas
-    sudo chmod +x /jarbas/bin/functions.sh
+    sudo apt-get install -y git > /dev/null
+    git clone https://github.com/gpcnifpb/jarbas.git
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -124,12 +135,10 @@ Vagrant.configure("2") do |config|
 
     SHELL
   end
-
 # ATTACKER
   config.vm.define "Attacker" do |attacker|
     attacker.vm.box = "ubuntu/trusty64"
     attacker.vm.hostname = "attacker"
-
     # NETWORK
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
@@ -138,10 +147,9 @@ Vagrant.configure("2") do |config|
     config.vm.network "public_network", auto_config: false
     config.vm.provision "shell",
     run: "always",
-
     # SHARED FOLDER
     inline: "ifconfig eth2 192.168.10.7 netmask 255.255.255.0 up"
-    attacker.vm.synced_folder "../../jarbas", "/jarbas/", create: true
+    attacker.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
 
     attacker.vm.provider "virtualbox" do |vb|
       vb.name = "attacker"
@@ -152,17 +160,20 @@ Vagrant.configure("2") do |config|
 
     echo "-------------------------------- SETTING UP ATTACKER --------------------------------"
 
+    echo "Criando diretórios"
+    sudo mkdir -p /home/vagrant/log/attacker
+
     echo "Update and Build Essentials"
     sudo apt-get -y update > /dev/null
     sudo apt-get install -y build-essential > /dev/null
     sudo apt-get install -y git > /dev/null
 
     echo "J.A.R.B.A.S."
-    cd /
-    sudo git clone "https://github.com/gpcnifpb/jarbas.git"
-    sudo ln -s /jarbas/bin/jarbas /usr/bin/jarbas
-    sudo chmod +x /jarbas/bin/jarbas
-    sudo chmod +x /jarbas/bin/functions.sh
+    sudo apt-get install -y git > /dev/null
+    git clone https://github.com/gpcnifpb/jarbas.git
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
 
     echo "Installing SSHPASS"
     sudo apt-get -y install sshpass > /dev/null
@@ -192,146 +203,145 @@ Vagrant.configure("2") do |config|
 
     SHELL
   end
-  #
-  # config.vm.define "gpcnmonitorado" do |gpcnmonitorado|
-  #   gpcnmonitorado.vm.box = "ubuntu/trusty64"
-  #   gpcnmonitorado.vm.hostname = "gpcnmonitorado"
-  #   #Adaptador em modo
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth1 192.168.10.201 netmask 255.255.255.0 up"
-  #   config.vm.network "public_network", auto_config: false
-  #
-  #   gpcnmonitorado.vm.synced_folder "./monitorado/", "/gpcn/monitorado/", create: true
-  #
-  #   gpcnmonitorado.vm.provider "virtualbox" do |vb|
-  #     vb.name = "gpcnmonitorado"
-  #     vb.memory = 256
-  #   end
-  #
-  #   gpcnmonitorado.vm.provision "shell", inline: <<-SHELL
-  #
-  #   echo "-------------------------------- CONFIGURACAO DO MONITORADO --------------------------------"
-  #
-  #   echo "Criando diretórios"
-  #   sudo mkdir -p /gpcn/monitorado/logs/collectl/
-  #   sudo mkdir -p /gpcn/monitorado/logs/netstat/
-  #   sudo mkdir -p /gpcn/monitorado/logs/sysbench/
-  #   sudo mkdir -p /gpcn/monitorado/scripts/
-  #
-  #   echo "Instalando J.A.R.B.A.S"
-  #   sudo apt-get install -y git > /dev/null
-  #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/bin/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
-  #
-  #   echo "Installing SSHPASS"
-  #   sudo apt-get -y install sshpass > /dev/null
-  #   sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-  #   sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-  #   sudo service ssh restart
-  #   sudo rm /home/vagrant/.ssh/known_hosts
-  #   echo "Status SSHPASS:"
-  #   sshpass -V
-  #
-  #   echo "Installing build essentials"
-  #   sudo apt-get -y update > /dev/null
-  #   sudo apt-get -y upgrade > /dev/null
-  #   sudo apt-get install -y build-essential > /dev/null
-  #
-  #   echo "Installing Apache"
-  #   sudo apt-get -y install apache2 > /dev/null
-  #   echo "Status Apache:"
-  #   apache2 -v
-  #
-  #   echo "Installing Collectl"
-  #   sudo apt-get -y install collectl > /dev/null
-  #   echo "Status Collectl:"
-  #   collectl --version
-  #
-  #   echo "Installing Netstat"
-  #   sudo apt-get -y install netstat-nat > /dev/null
-  #   echo "Status Netstat:"
-  #   netstat --version
-  #
-  #   echo "Installing Sysbench"
-  #   sudo apt-get -y install sysbench > /dev/null
-  #   echo "Status Sysbench:"
-  #   sysbench --version
-  #
-  #   SHELL
-  # end
-  #
-  # config.vm.define "gpcnatacado" do |gpcnatacado|
-  #   gpcnatacado.vm.box = "ubuntu/trusty64"
-  #   gpcnatacado.vm.hostname = "gpcnatacado"
-  #   #Adaptador em modo
-  #   config.vm.network "public_network", auto_config: false
-  #   config.vm.provision "shell",
-  #   run: "always",
-  #   inline: "ifconfig eth1 192.168.0.200 netmask 255.255.255.0 up"
-  #   config.vm.network "public_network", auto_config: false
-  #   gpcnatacado.vm.synced_folder "./atacado/", "/gpcn/atacado/", create: true
-  #
-  #   gpcnatacado.vm.provider "virtualbox" do |vb|
-  #     vb.name = "gpcnatacado"
-  #     vb.memory = 256
-  #   end
-  #
-  #   gpcnatacado.vm.provision "shell", inline: <<-SHELL
-  #
-  #   echo "-------------------------------- CONFIGURACAO DO ATACADO --------------------------------"
-  #
-  #   echo "Criando diretórios"
-  #   sudo mkdir -p /gpcn/atacado/logs/collectl/
-  #   sudo mkdir -p /gpcn/atacado/logs/netstat/
-  #   sudo mkdir -p /gpcn/atacado/scripts/
-  #
-  #   echo "Installing SSHPASS"
-  #   sudo apt-get -y install sshpass > /dev/null
-  #   sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
-  #   sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
-  #   sudo service ssh restart
-  #   sudo rm /home/vagrant/.ssh/known_hosts
-  #   echo "Status SSHPASS:"
-  #   sshpass -V
-  #
-  #   echo "Instalando J.A.R.B.A.S"
-  #   sudo apt-get install -y git > /dev/null
-  #   git clone https://github.com/gpcnifpb/jarbas.git
-  #   sudo chmod +x /home/vagrant/jarbas/bin/jarbas
-  #   sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
-  #   sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
-  #
-  #   echo "Installing build essentials"
-  #   sudo apt-get -y update > /dev/null
-  #   sudo apt-get -y upgrade > /dev/null
-  #   sudo apt-get install -y build-essential > /dev/null
-  #
-  #
-  #   echo "Installing Apache"
-  #   sudo apt-get -y install apache2 > /dev/null
-  #   echo "Status Apache:"
-  #   apache2 -v
-  #
-  #   echo "Installing Collectl"
-  #   sudo apt-get -y install collectl > /dev/null
-  #   echo "Status Collectl:"
-  #   collectl --version
-  #
-  #   echo "Installing Netstat"
-  #   sudo apt-get -y install netstat-nat > /dev/null
-  #   echo "Status Netstat:"
-  #   netstat --version
-  #
-  #   echo "Installing Stress-NG"
-  #   sudo apt-get -y install stress-ng > /dev/null
-  #   echo "Status Stress-ng:"
-  #   stress-ng --version
-  #
-  #   SHELL
-  # end
-  #
-end
+# MONITORED
+  config.vm.define "Monitored" do |monitored|
+    monitored.vm.box = "ubuntu/trusty64"
+    monitored.vm.hostname = "monitored"
+    # NETWORK
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    inline: "ifconfig eth1 192.168.10.201 netmask 255.255.255.0 up"
+    config.vm.network "public_network", auto_config: false
+    # SHARED FOLDER
+    monitored.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
+
+    monitored.vm.provider "virtualbox" do |vb|
+      vb.name = "monitored"
+      vb.memory = 256
+    end
+
+    monitored.vm.provision "shell", inline: <<-SHELL
+
+    echo "-------------------------------- SETTING UP MONITORED --------------------------------"
+
+    echo "Criando diretórios"
+    sudo mkdir -p /home/vagrant/log/monitored
+
+    echo "Update and Build Essentials"
+    sudo apt-get -y update > /dev/null
+    sudo apt-get install -y build-essential > /dev/null
+    sudo apt-get install -y git > /dev/null
+
+    echo "J.A.R.B.A.S."
+    sudo apt-get install -y git > /dev/null
+    git clone https://github.com/gpcnifpb/jarbas.git
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+
+    echo "Installing SSHPASS"
+    sudo apt-get -y install sshpass > /dev/null
+    sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+    sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    sudo service ssh restart
+    sudo rm /home/vagrant/.ssh/known_hosts
+    echo "Status SSHPASS:"
+    sshpass -V
+
+    echo "Installing Apache"
+    sudo apt-get -y install apache2 > /dev/null
+    echo "Status Apache:"
+    apache2 -v
+
+    echo "Installing Collectl"
+    sudo apt-get -y install collectl > /dev/null
+    echo "Status Collectl:"
+    collectl --version
+
+    echo "Installing Netstat"
+    sudo apt-get -y install netstat-nat > /dev/null
+    echo "Status Netstat:"
+    netstat --version
+
+    echo "Installing Sysbench"
+    sudo apt-get -y install sysbench > /dev/null
+    echo "Status Sysbench:"
+    sysbench --version
+
+    echo "-------------------------------- MONITORED IS READY --------------------------------"
+
+    SHELL
+  end
+# ATTAKED
+  config.vm.define "Attaked" do |attaked|
+    attaked.vm.box = "ubuntu/trusty64"
+    attaked.vm.hostname = "attaked"
+    # NETWORK
+    config.vm.network "public_network", auto_config: false
+    config.vm.provision "shell",
+    run: "always",
+    inline: "ifconfig eth1 192.168.0.200 netmask 255.255.255.0 up"
+    config.vm.network "public_network", auto_config: false
+    # SHARED FOLDER
+    attaked.vm.synced_folder "../../jarbas", "/home/vagrant/jarbas/", create: true
+
+    attaked.vm.provider "virtualbox" do |vb|
+      vb.name = "attaked"
+      vb.memory = 256
+    end
+
+    attaked.vm.provision "shell", inline: <<-SHELL
+
+    echo "-------------------------------- SETTING UP ATTAKED --------------------------------"
+
+    echo "Criando diretórios"
+    sudo mkdir -p /home/vagrant/log/attaked
+
+    echo "Update and Build Essentials"
+    sudo apt-get -y update > /dev/null
+    sudo apt-get install -y build-essential > /dev/null
+    sudo apt-get install -y git > /dev/null
+
+    echo "Installing SSHPASS"
+    sudo apt-get -y install sshpass > /dev/null
+    sudo sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
+    sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    sudo service ssh restart
+    sudo rm /home/vagrant/.ssh/known_hosts
+    echo "Status SSHPASS:"
+    sshpass -V
+
+    echo "J.A.R.B.A.S."
+    sudo apt-get install -y git > /dev/null
+    git clone https://github.com/gpcnifpb/jarbas.git
+    sudo chmod +x /home/vagrant/jarbas/bin/jarbas
+    sudo chmod +x /home/vagrant/jarbas/bin/functions.sh
+    sudo ln -s /home/vagrant/jarbas/bin/jarbas /usr/bin/jarbas
+
+    echo "Installing Apache"
+    sudo apt-get -y install apache2 > /dev/null
+    echo "Status Apache:"
+    apache2 -v
+
+    echo "Installing Collectl"
+    sudo apt-get -y install collectl > /dev/null
+    echo "Status Collectl:"
+    collectl --version
+
+    echo "Installing Netstat"
+    sudo apt-get -y install netstat-nat > /dev/null
+    echo "Status Netstat:"
+    netstat --version
+
+    echo "Installing Stress-NG"
+    sudo apt-get -y install stress-ng > /dev/null
+    echo "Status Stress-ng:"
+    stress-ng --version
+
+    echo "-------------------------------- ATTAKED IS READY --------------------------------"
+
+    SHELL
+  end
+
+end # End of vagrant file
