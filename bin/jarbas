@@ -88,7 +88,7 @@ do
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
           ln -s /root/jarbas/jarbas /usr/bin/jarbas
-          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/functions.sh
           chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
@@ -154,7 +154,7 @@ do
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
           ln -s /root/jarbas/jarbas /usr/bin/jarbas
-          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/functions.sh
           chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
@@ -197,7 +197,7 @@ do
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
           ln -s /root/jarbas/jarbas /usr/bin/jarbas
-          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/functions.sh
           chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
@@ -255,7 +255,7 @@ do
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
           ln -s /root/jarbas/jarbas /usr/bin/jarbas
-          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/functions.sh
           chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
