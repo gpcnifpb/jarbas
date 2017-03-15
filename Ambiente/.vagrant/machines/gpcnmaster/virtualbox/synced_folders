@@ -1,1 +1,0 @@
-{"virtualbox":{"/gpcn/master":{"create":true,"guestpath":"/gpcn/master","hostpath":"C:/Users/neuds/Desktop/Projeto/jarbas/Ambiente/master","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/neuds/Desktop/Projeto/jarbas/Ambiente","disabled":false,"__vagrantfile":true}}}
