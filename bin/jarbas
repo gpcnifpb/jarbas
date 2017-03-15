@@ -70,8 +70,10 @@ do
           mkdir -p ~/jarbas/attacked/logs/netstat/
 
           echo -e "${BLUE} ## Installing Build Essentials ##"
+	  sed -i "cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
+          
           apt-get install -y build-essential > /dev/null
 
           echo -e "${BLUE} ## Installing Git  ##"
@@ -84,6 +86,7 @@ do
           chmod +x functions.sh
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
+	  apt-get -y install ssh >/dev/null
           apt-get -y install sshpass > /dev/null
           sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
           echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
