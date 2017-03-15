@@ -87,8 +87,9 @@ do
           git --version
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
-          ln -s jarbas /usr/bin/jarbas
-          chmod +x functions.sh
+          ln -s /root/jarbas/jarbas /usr/bin/jarbas
+          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
 	        apt-get -y install ssh >/dev/null
@@ -152,8 +153,9 @@ do
           git --version
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
-          ln -s jarbas /usr/bin/jarbas
-          chmod +x functions.sh
+          ln -s /root/jarbas/jarbas /usr/bin/jarbas
+          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
           apt-get -y install ssh >/dev/null
@@ -194,8 +196,9 @@ do
           git --version
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
-          ln -s jarbas /usr/bin/jarbas
-          chmod +x functions.sh
+          ln -s /root/jarbas/jarbas /usr/bin/jarbas
+          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
           apt-get -y install ssh >/dev/null
@@ -251,8 +254,9 @@ do
           git --version
 
           echo -e "${BLUE} ## Configuring Jarbas  ##"
-          ln -s jarbas /usr/bin/jarbas
-          chmod +x functions.sh
+          ln -s /root/jarbas/jarbas /usr/bin/jarbas
+          chmod +x /root/jarbasfunctions.sh
+          chmod +x /root/jarbas/jarbas
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
           apt-get -y install ssh >/dev/null
