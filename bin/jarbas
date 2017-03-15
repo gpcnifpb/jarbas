@@ -70,10 +70,10 @@ do
           mkdir -p ~/jarbas/attacked/logs/netstat/
 
           echo -e "${BLUE} ## Installing Build Essentials ##"
-	  sed -i "cdrom/d" /etc/apt/sources.list
+	        sed -i "/cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
-          
+
           apt-get install -y build-essential > /dev/null
 
           echo -e "${BLUE} ## Installing Git  ##"
@@ -86,12 +86,13 @@ do
           chmod +x functions.sh
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
-	  apt-get -y install ssh >/dev/null
+	        apt-get -y install ssh >/dev/null
           apt-get -y install sshpass > /dev/null
           sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
           echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
           service ssh restart
-          rm /home/vagrant/.ssh/known_hosts
+          rm /home/jarbas/.ssh/known_hosts
+          rm /root/.ssh/known_hosts
 
           echo -e "${GREEN} Status SSHPASS:"
           sshpass -V
@@ -126,6 +127,7 @@ do
           mkdir -p ~/jarbas/master/logs/
 
           echo -e "${BLUE} ## Installing Build Essentials ##"
+          sed -i "/cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
@@ -140,11 +142,13 @@ do
           chmod +x functions.sh
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install ssh >/dev/null
           apt-get -y install sshpass > /dev/null
           sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
           echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
           service ssh restart
-          rm /home/vagrant/.ssh/known_hosts
+          rm /home/jarbas/.ssh/known_hosts
+          rm /root/.ssh/known_hosts
 
           echo -e "${GREEN} Status SSHPASS:"
           sshpass -Vs
@@ -159,6 +163,7 @@ do
           mkdir -p ~/jarbas/attacker/logs/
 
           echo -e "${BLUE} ## Installing Build Essentials ##"
+          sed -i "/cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
@@ -173,11 +178,13 @@ do
           chmod +x functions.sh
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install ssh >/dev/null
           apt-get -y install sshpass > /dev/null
           sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
           echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
           service ssh restart
-          rm /home/vagrant/.ssh/known_hosts
+          rm /home/jarbas/.ssh/known_hosts
+          rm /root/.ssh/known_hosts
 
           echo -e "${GREEN} Status SSHPASS:"
           sshpass -Vs
@@ -207,6 +214,7 @@ do
           mkdir -p ~/jarbas/client/logs/
 
           echo -e "${BLUE} ## Installing Build Essentials ##"
+          sed -i "/cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
@@ -221,11 +229,13 @@ do
           chmod +x functions.sh
 
           echo -e "${BLUE} ## Installing SSHPASS ##"
+          apt-get -y install ssh >/dev/null
           apt-get -y install sshpass > /dev/null
           sed -i 's,PermitRootLogin without-password,PermitRootLogin yes,g' /etc/ssh/sshd_config
           echo -e "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
           service ssh restart
-          rm /home/vagrant/.ssh/known_hosts
+          rm /home/jarbas/.ssh/known_hosts
+          rm /root/.ssh/known_hosts
 
           echo -e "${GREEN} Status SSHPASS:"
           sshpass -Vs
