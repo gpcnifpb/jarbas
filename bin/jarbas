@@ -73,8 +73,13 @@ do
 	        sed -i "/cdrom/d" /etc/apt/sources.list
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
-
           apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Instalando NFS##"
+          apt-get -y install nfs-common > /dev/null
+          mkdir -p /root/nfs-logs-attacked
+          mount -t nfs 192.168.10.254:/root/nfs-logs /root/nfs-logs-attacked
+          echo "192.168.10.254:/root/nfs-logs /root/nfs-logs-attacked nfs auto,exec 0 0" >> /etc/fstab
 
           echo -e "${BLUE} ## Installing Git  ##"
           apt-get install -y git > /dev/null
@@ -132,6 +137,16 @@ do
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
 
+          echo -e "${BLUE} ## Instalando NFS##"
+          apt-get -y insttall nfs-kernel-server > /dev/null
+          mkdir -p /root/nfs-logs
+          chmod 777 /root/nfs-logs
+          chown -R nobody:nogroup /root/nfs-logs
+          echo "/root/nfs-logs 192.168.0.0/255.255.255.0(rw)" >> /etc/exports
+          echo "/root/nfs-logs 192.168.10.0/255.255.255.0(rw)" >> /etc/exports
+          /etc/init.d/nfs-kernel-server restart > /dev/null
+          exports
+
           echo -e "${BLUE} ## Installing Git  ##"
           apt-get install -y git > /dev/null
           echo -e "${GREEN} Status Git:"
@@ -167,6 +182,12 @@ do
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Instalando NFS##"
+          apt-get -y install nfs-common > /dev/null
+          mkdir -p /root/nfs-logs-attacker
+          mount -t nfs 192.168.10.254:/root/nfs-logs /root/nfs-logs-attacker
+          echo "192.168.10.254:/root/nfs-logs /root/nfs-logs-attacker nfs auto,exec 0 0" >> /etc/fstab
 
           echo -e "${BLUE} ## Installing Git  ##"
           apt-get install -y git > /dev/null
@@ -218,6 +239,12 @@ do
           apt-get -y update > /dev/null
           apt-get -y upgrade > /dev/null
           apt-get install -y build-essential > /dev/null
+
+          echo -e "${BLUE} ## Instalando NFS##"
+          apt-get -y install nfs-common > /dev/null
+          mkdir -p /root/nfs-logs-client
+          mount -t nfs 192.168.0.254:/root/nfs-logs /root/nfs-logs-client
+          echo "192.168.0.254:/root/nfs-logs /root/nfs-logs-client nfs auto,exec 0 0" >> /etc/fstab
 
           echo -e "${BLUE} ## Installing Git  ##"
           apt-get install -y git > /dev/null
