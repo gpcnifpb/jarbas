@@ -140,12 +140,11 @@ do
           echo -e "${BLUE} ## Instalando NFS##"
           apt-get -y insttall nfs-kernel-server > /dev/null
           mkdir -p /root/nfs-logs
-          chmod 777 /root/nfs-logs
+          chmod -R 777 /root/
           chown -R nobody:nogroup /root/nfs-logs
           echo "/root/nfs-logs 192.168.0.0/255.255.255.0(rw)" >> /etc/exports
           echo "/root/nfs-logs 192.168.10.0/255.255.255.0(rw)" >> /etc/exports
           /etc/init.d/nfs-kernel-server restart > /dev/null
-          exports
 
           echo -e "${BLUE} ## Installing Git  ##"
           apt-get install -y git > /dev/null
@@ -211,7 +210,7 @@ do
           sshpass -Vs
 
           echo -e "${BLUE} ## Installing EthTool ##"
-          sudo apt-get -y install ethtool > /dev/null
+          apt-get -y install ethtool > /dev/null
           echo -e "${GREEN} Status EthTool: "
           ethtool --version
 
@@ -219,9 +218,9 @@ do
           wget --quiet "http://downloads.sourceforge.net/project/t50/t50-5.6/t50-5.6.6.tar.gz"
           tar -xvzf t50-5.6.6.tar.gz > /dev/null
           cd t50-5.6.6
-          sudo ./configure > /dev/null
-          sudo make > /dev/null
-          sudo make install > /dev/null
+          ./configure > /dev/null
+          make > /dev/null
+          make install > /dev/null
           echo -e "${GREEN} Status T50: "
           t50 --version
 
@@ -273,12 +272,12 @@ do
           ethtool --version
 
           echo -e "${BLUE} ## Installing TCP Dump ##"
-          sudo apt-get -y install tcpdump > /dev/null
+          apt-get -y install tcpdump > /dev/null
           echo -e "${GREEN} Status TCPDump: "
           tcpdump --version
 
           echo -e "${BLUE} ## Installing Siege ##"
-          sudo apt-get -y install siege > /dev/null
+          apt-get -y install siege > /dev/null
           echo -e "${GREEN} Status Siege: "
           siege --version
 
