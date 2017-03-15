@@ -267,7 +267,7 @@ do
           sshpass -Vs
 
           echo -e "${BLUE} ## Installing EthTool ##"
-          sudo apt-get -y install ethtool > /dev/null
+          apt-get -y install ethtool > /dev/null
           echo -e "${GREEN} Status EthTool: "
           ethtool --version
 
